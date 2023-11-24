@@ -1,9 +1,10 @@
-export class UseCase {
+/* export class UseCase {
   constructor(private readonly gameRepository: GameRepository) {}
 
-  /* gameRepository.getPlayers(): <Player[]> {
+  gameRepository.getPlayers(): <Player[]> {
         const players = await this.gameRepository.getPlayers();
 
         return players;
-    } */
+    }
 }
+ */

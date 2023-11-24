@@ -1,0 +1,11 @@
+:root{
+    color-scheme: light dark;
+}
+div{
+    background-color: aqua;
+}
+.container{
+    display: flex;
+    justify-content: center;
+    background-color: gray;
+}
