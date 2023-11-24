@@ -4,35 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../../../../src/dices/infrastructure/frontend/style.css">
-    <style>
+    <!-- <style>
         :root{
             color-scheme: light dark;
         }
         
-        .header{
+        #header{
             display: flex;
             justify-content: center;
-            align-items: center;
         }
         
         body{
             display: flex;
             justify-content: center;
         }
-    </style>
-    <script src="../../../../dist/script.js"></script>
+        </style>
+    <script>
+        const submitLogin = document.getElementById('submit');
+        const user = document.getElementById('name');
+        const pass = document.getElementById('pass');
+        const output = document.getElementById('result');
+
+        console.log(process.cwd());
+        submitLogin.addEventListener('click', (e) => {
+            
+            e.preventDefault();
+            if (user.value && pass.value) {
+                output.innerHTML=`Validado`;
+            } 
+        });
+
+    </script> -->
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
 </head>
 <body>
-    <div id ="container">
-        <section id="header">
-            <h1>LOGIN</h1>
-        </section>
-        <form>
+    <div id="container">
+        <div id="header">
+            <h1> Wellcome to Dice Game!!</h1>
+        </div>
+            <h2>LOGIN</h2>
+        <form method="post">
             <input type="text" id="name" placeholder="Your name" minlength="3" maxlength="20" required autofocus>
             <input type="password" name="pass" id="pass" minlength="6" required placeholder="Your password">
             <input type="submit" value="submit" id="submit">
         </form>
+        <div id="result">
+
+        </div>
     </div>
 </body>
 </html>

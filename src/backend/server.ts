@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import express from 'express';
 import { json, urlencoded } from 'body-parser';
 import { dicesRouter } from '../dices/infrastructure/routes/Routes';
+import path = require('path');
 
 dotenv.config();
 
@@ -20,3 +21,8 @@ app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
 });
 
+app.use(
+  express.static(
+    path.join(__dirname, '..', 'dices', 'infrastructure', 'frontend')
+  )
+);

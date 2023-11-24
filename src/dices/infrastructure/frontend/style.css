@@ -4,7 +4,7 @@
 div{
     background-color: aqua;
 }
-.container{
+#container{
     display: flex;
     justify-content: center;
     background-color: gray;
