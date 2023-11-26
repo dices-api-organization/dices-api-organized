@@ -8,7 +8,7 @@ import path = require('path');
 
 dotenv.config();
 
-const port = process.env.PORT ?? 3001;
+export const port = process.env.PORT ?? 3001;
 const app = express();
 
 app.use(helmet());

@@ -1,10 +1,11 @@
-/* export class UseCase {
+/* export class UseCases {
   constructor(private readonly gameRepository: GameRepository) {}
 
-  gameRepository.getPlayers(): <Player[]> {
+  gameRepository.postUserRegisterController(): : 
+
+ /*  gameRepository.getPlayers(): <Player[]> {
         const players = await this.gameRepository.getPlayers();
 
         return players;
     }
-}
- */
+} */

@@ -3,56 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!-- <style>
-        :root{
-            color-scheme: light dark;
-        }
-        
-        #header{
-            display: flex;
-            justify-content: center;
-        }
-        
-        body{
-            display: flex;
-            justify-content: center;
-        }
-        </style>
-    <script>
-        const submitLogin = document.getElementById('submit');
-        const user = document.getElementById('name');
-        const pass = document.getElementById('pass');
-        const output = document.getElementById('result');
-
-        console.log(process.cwd());
-        submitLogin.addEventListener('click', (e) => {
-            
-            e.preventDefault();
-            if (user.value && pass.value) {
-                output.innerHTML=`Validado`;
-            } 
-        });
-
-    </script> -->
-    
+    <title>Dices Game</title>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
 </head>
 <body>
-    <div id="container">
         <div id="header">
-            <h1> Wellcome to Dice Game!!</h1>
+            <h1> Wellcome to Dices Game!!</h1>
         </div>
-            <h2>LOGIN</h2>
-        <form method="post">
-            <input type="text" id="name" placeholder="Your name" minlength="3" maxlength="20" required autofocus>
-            <input type="password" name="pass" id="pass" minlength="6" required placeholder="Your password">
-            <input type="submit" value="submit" id="submit">
-        </form>
+        <div id="subHeader">
+            <h3>Create account</h3>
+        </div>
+        <section>
+            <form>
+                <input type="text" id="name" placeholder="Your name" minlength="3" maxlength="20" required autofocus>
+                <input type="password" name="pass" id="pass" minlength="6" required placeholder="Your password">
+                <input type="submit" value="submit" id="submit" name="Registered">
+            </form>
+        </section>
+        <div id="loginLink">
+            <p>Have you an account?
+            <a href="http://localhost/3000/userLogin">Login</a></p>
+        </div>
         <div id="result">
 
         </div>
-    </div>
+        <script src="script.js"></script>
 </body>
 </html>

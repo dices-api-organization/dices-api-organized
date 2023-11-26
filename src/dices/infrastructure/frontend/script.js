@@ -3,11 +3,21 @@ const user = document.getElementById('name');
 const pass = document.getElementById('pass');
 const output = document.getElementById('result');
 
+const urlMiddelwareValidation = window.location + 'userValidation';
+
 submitLogin.addEventListener('click', (e) => {
   e.preventDefault();
-  console.log( e.submitLogin.value);
- 
-  if (user.value && pass.value) {
-    output.innerHTML = `Validado`;
-  }
+  output.innerHTML = `<p>Validando...</p>`;
+  const res = fetch(urlMiddelwareValidation, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      user: user.value,
+      password: pass.value
+    })
+  });
+  const isValidate = res ? true : false;
+  output.innerHTML = `Es un usuario correcto?: ${isValidate}`;
 });

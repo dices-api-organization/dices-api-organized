@@ -1,8 +1,12 @@
 import { Router } from 'express';
 //import { getPlayersController } from './getPlayersController';
-import { getLoginController } from './getLoginController';
+import { getStartIndexController } from './getStartIndexController';
+//import { postUserLoginController } from './postUserLoginController';
 
 export const dicesRouter = Router();
 
-dicesRouter.get('/', getLoginController);
+dicesRouter.get('/', getStartIndexController);
 //dicesRouter.get('/players', getPlayersController);
+//dicesRouter.post('/userValidation', postUserLoginController);
+dicesRouter.post('/userRegister', postUserRegisterController);
+

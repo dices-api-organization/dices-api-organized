@@ -1,11 +1,11 @@
 :root{
     color-scheme: light dark;
 }
-div{
-    background-color: aqua;
-}
-#container{
+#header, #subHeader, #container, section, #result, #loginLink{
     display: flex;
     justify-content: center;
-    background-color: gray;
+}
+
+form{
+    display: block;
 }
