@@ -1,11 +1,11 @@
-/* export class UseCases {
+import { Player } from '../domain/entities/Player';
+import { GameRepository } from '../domain/repositories/GameRepository';
+
+export class UseCases {
   constructor(private readonly gameRepository: GameRepository) {}
 
-  gameRepository.postUserRegisterController(): : 
-
- /*  gameRepository.getPlayers(): <Player[]> {
-        const players = await this.gameRepository.getPlayers();
-
-        return players;
-    }
-} */
+  async postUser(newUser: Player): Promise<Player> {
+    const newRegisteredUser = await this.gameRepository.postNewUser(newUser);
+    return newRegisteredUser;
+  }
+}

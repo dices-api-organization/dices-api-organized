@@ -3,7 +3,7 @@ const user = document.getElementById('name');
 const pass = document.getElementById('pass');
 const output = document.getElementById('result');
 
-const urlMiddelwareValidation = window.location + 'userValidation';
+const urlMiddelwareValidation = window.location + 'userRegister';
 
 submitLogin.addEventListener('click', (e) => {
   e.preventDefault();
@@ -14,7 +14,7 @@ submitLogin.addEventListener('click', (e) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      user: user.value,
+      name: user.value,
       password: pass.value
     })
   });

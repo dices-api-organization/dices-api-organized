@@ -5,7 +5,7 @@ import express from 'express';
 import { json, urlencoded } from 'body-parser';
 import { dicesRouter } from '../dices/infrastructure/routes/Routes';
 import path = require('path');
-
+import '../dices/infrastructure/mongoDB/mongoConnectionDB';
 dotenv.config();
 
 export const port = process.env.PORT ?? 3001;
