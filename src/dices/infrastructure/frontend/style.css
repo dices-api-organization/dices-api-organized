@@ -1,11 +1,13 @@
 :root{
     color-scheme: light dark;
 }
-#header, #subHeader, #container, section, #result, #loginLink{
+#header, #subHeader, #container, section, #result, #registerLink{
     display: flex;
     justify-content: center;
 }
-
+#result{
+    color: red;
+}
 form{
     display: block;
 }

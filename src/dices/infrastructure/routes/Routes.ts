@@ -7,5 +7,5 @@ export const dicesRouter = Router();
 
 //dicesRouter.get('/', getStartIndexController);
 //dicesRouter.get('/players', getPlayersController);
-//dicesRouter.post('/userValidation', postUserLoginController);
+dicesRouter.post('/userLogin', postUserLoginController);
 dicesRouter.post('/userRegister', postUserRegisterController);

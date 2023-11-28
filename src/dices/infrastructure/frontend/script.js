@@ -3,10 +3,11 @@ const user = document.getElementById('name');
 const pass = document.getElementById('pass');
 const output = document.getElementById('result');
 
-const urlMiddelwareValidation = window.location + 'userRegister';
+const urlMiddelwareValidation = window.location + 'userLogin';
 function cleanInput(){
   user.value = '';
   pass.value = '';
+  output.innerHTML = '';
 }
 cleanInput();
 submitLogin.addEventListener('click', (e) => {
@@ -23,4 +24,13 @@ submitLogin.addEventListener('click', (e) => {
     })
   });
   cleanInput();
+  res.then((value) => {
+    if (value.ok) {
+      output.innerHTML = `
+    <h4>
+    user registered!!!
+    Please login
+    </h4>`;
+    }
+  });
 });

@@ -1,11 +1,4 @@
-import { Request, Response } from 'express';
-import { useCases } from '../mongoDependencyInjection';
-
-
-export const postUserRegisterController = async (
-  req: Request,
-  res: Response
-) => {
+export const isRegistered = async (req) => {
   const { name, password } = req.body;
   const isRegistered = await useCases.postUser({
     name: name,

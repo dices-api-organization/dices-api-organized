@@ -4,9 +4,10 @@ import { UserModel } from '../mongoModel/UserSchema';
 
 export class MongoGameRepository implements GameRepository {
   async postNewUser(newUser: Player): Promise<boolean> {
-    if (await UserModel.find(newUser)) {
-      console.log('false');
-      throw new Error('User exists!!!! Login Please.');
+    const isRegistered = await UserModel.find({
+      name: newUser.name
+    });
+    if (isRegistered.length) {
       return false;
     }
     console.log('true');
@@ -14,4 +15,3 @@ export class MongoGameRepository implements GameRepository {
     return true;
   }
 }
-//}
