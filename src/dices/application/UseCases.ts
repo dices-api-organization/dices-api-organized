@@ -8,4 +8,9 @@ export class UseCases {
     const newRegisteredUser = await this.gameRepository.postNewUser(newUser);
     return newRegisteredUser;
   }
+
+  async getUserLogin(newUser: Player): Promise<Player | null> {
+    const userlogged = await this.gameRepository.getUserLogin(newUser);
+    return userlogged;
+  }
 }

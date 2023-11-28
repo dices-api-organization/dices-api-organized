@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { useCases } from '../mongoDependencyInjection';
 
-
 export const postUserRegisterController = async (
   req: Request,
   res: Response
