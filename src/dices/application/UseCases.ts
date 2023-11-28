@@ -4,7 +4,7 @@ import { GameRepository } from '../domain/repositories/GameRepository';
 export class UseCases {
   constructor(private readonly gameRepository: GameRepository) {}
 
-  async postUser(newUser: Player): Promise<Player> {
+  async postUser(newUser: Player): Promise<boolean> {
     const newRegisteredUser = await this.gameRepository.postNewUser(newUser);
     return newRegisteredUser;
   }
