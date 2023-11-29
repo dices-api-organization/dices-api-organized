@@ -1,7 +1,7 @@
 :root{
     color-scheme: light dark;
 }
-#header, #subHeader, #container, #imageDices, section, #result, #loginLink{
+#header, #subHeader, #container, #imageDices, section, #result, #registerLink{
     display: flex;
     justify-content: center;
 }

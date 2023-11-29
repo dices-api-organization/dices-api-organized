@@ -16,12 +16,14 @@ export class MongoGameRepository implements GameRepository {
     return true;
   }
 
-  async getUserLogin(newUser: Player): Promise<Player | null> {
-    const userLogged = await UserModel.find({
-      name: newUser.name,
+  async postUserLogin(newUser: Player): Promise<Player | null> {
+    const isNameRegistered = await UserModel.findOne({
+      name: newUser.name
+    });
+    const isPassRegistered = await UserModel.findOne({
       password: newUser.password
     });
-    if (userLogged.length) {
+    if (isNameRegistered && isPassRegistered) {
       console.log('success');
       return newUser;
     } else {

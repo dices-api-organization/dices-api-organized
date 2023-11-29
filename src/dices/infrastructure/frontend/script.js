@@ -23,6 +23,7 @@ submitLogin.addEventListener('click', (e) => {
       password: pass.value
     })
   });
+
   cleanInput();
   res.then((value) => {
     if (!value.body.name) {
