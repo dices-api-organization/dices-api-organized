@@ -2,8 +2,10 @@ const submitLogin = document.getElementById('submit');
 const user = document.getElementById('name');
 const pass = document.getElementById('pass');
 const output = document.getElementById('result');
+const register = document.getElementById('registerLink');
 
 const urlMiddelwareValidation = window.location + 'userLogin';
+
 function cleanInput() {
   user.value = '';
   pass.value = '';
@@ -26,12 +28,22 @@ submitLogin.addEventListener('click', (e) => {
 
   cleanInput();
   res.then((value) => {
-    if (!value.body.name) {
+    if (!value.ok) {
       output.innerHTML = `
     <h4>
     Your name or password were wrong. </br>
-    Please try again ${value.body.name}.</br>
+    Please try again.</br>
     If you haven't an account please sign up!</h4>`;
+      setTimeout(() => {
+        output.innerHTML = '';
+      }, 3000);
     }
   });
+  res.catch((err) => {
+    throw new Error(err);
+  });
 });
+
+register.addEventListener('click', () => {
+  
+})
