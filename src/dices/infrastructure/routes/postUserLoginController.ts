@@ -1,21 +1,18 @@
 import { Request, Response } from 'express';
 import { useCases } from '../mongoDependencyInjection';
 
-export const postUserLoginController = async (req: Request, res: Response) => {
+export const postUserLoginController = (req: Request, res: Response) => {
   const { name, password } = req.body;
-  const isRegistered = await useCases.postUserLogin({
-    name: name,
-    password: password
-  });
-  if (!isRegistered?.name || !isRegistered?.password) {
-    console.log('no registered');
-    res.status(400).send({
-      message: 'User not found.'
+  useCases
+    .postUserLogin({
+      name: name,
+      password: password
+    })
+    .then((value: unknown) => {
+      if (value) res.status(200).send(value);
+      else res.status(404).send(value);
+    })
+    .catch((error) => {
+      console.log(error);
     });
-  } else {
-    console.log('you can play!!');
-    res.status(200).send({
-      message: 'User Logged In'
-    });
-  }
 };

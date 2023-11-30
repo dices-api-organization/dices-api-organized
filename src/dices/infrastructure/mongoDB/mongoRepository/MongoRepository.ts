@@ -23,7 +23,7 @@ export class MongoGameRepository implements GameRepository {
     const isPassRegistered = await UserModel.findOne({
       password: newUser.password
     });
-    if (isNameRegistered && isPassRegistered) {
+    if (isPassRegistered && isNameRegistered) {
       console.log('success');
       return newUser;
     } else {

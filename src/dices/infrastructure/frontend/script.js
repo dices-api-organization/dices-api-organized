@@ -4,7 +4,9 @@ const pass = document.getElementById('pass');
 const output = document.getElementById('result');
 const register = document.getElementById('registerLink');
 
-const urlMiddelwareValidation = window.location + 'userLogin';
+const urlMiddelwareValidation = window.location;
+const uriLogin = 'userLogin';
+const uriRegister = 'userRegister';
 
 function cleanInput() {
   user.value = '';
@@ -15,7 +17,7 @@ function cleanInput() {
 cleanInput();
 submitLogin.addEventListener('click', (e) => {
   e.preventDefault();
-  const res = fetch(urlMiddelwareValidation, {
+  const res = fetch(urlMiddelwareValidation + uriLogin, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
