@@ -1,6 +1,6 @@
 export interface Player {
-  id: string | number;
+  id?: string | number;
   name: string;
   password: string;
-  averageSuccess: number;
+  averageSuccess?: number;
 }
