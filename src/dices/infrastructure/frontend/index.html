@@ -3,36 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../../../../src/dices/infrastructure/frontend/style.css">
-    <style>
-        :root{
-            color-scheme: light dark;
-        }
-        
-        .header{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        body{
-            display: flex;
-            justify-content: center;
-        }
-    </style>
-    <script src="../../../../dist/script.js"></script>
+    <title>Dices Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id ="container">
-        <section id="header">
-            <h1>LOGIN</h1>
+        <div id="header">
+            <h1> Wellcome to Dices Game!!</h1>
+        </div>
+        <div id="imageDices">
+            <img src="img/redDices.png" alt="red dices"/>
+        </div>
+        <div id="subHeader">
+            <h3>Login</h3>
+        </div>
+        <section>
+            <form>
+                <input type="text" id="name" placeholder="Your name" minlength="3" maxlength="20" required autofocus>
+                <input type="password" name="pass" id="pass" minlength="6" required placeholder="Your password">
+                <input type="submit" value="submit" id="submit" name="login">
+            </form>
         </section>
-        <form>
-            <input type="text" id="name" placeholder="Your name" minlength="3" maxlength="20" required autofocus>
-            <input type="password" name="pass" id="pass" minlength="6" required placeholder="Your password">
-            <input type="submit" value="submit" id="submit">
-        </form>
-    </div>
+        <div id="regLink">
+            <p>
+                Haven't you an account?  
+                <a href="http://localhost:3000/userRegister" id="registerLink">Register</a> please.
+            </p>
+        </div>
+        <div id="result">
+
+        </div>
+        <script src="script.js"></script>
 </body>
 </html>
