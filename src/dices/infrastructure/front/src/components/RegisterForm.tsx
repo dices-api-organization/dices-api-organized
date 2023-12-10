@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-export const LoginForm = () => {
+export const RegisterForm = () => {
  const [name, setName] = useState<string>('')
  const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
@@ -8,8 +8,9 @@ export const LoginForm = () => {
 
  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(name);
     
-   fetch('http://localhost:3000/userLogin', {
+   fetch('http://localhost:3000/userRegister', {
     method: 'POST',
     mode: 'cors',
     headers: {
@@ -22,10 +23,10 @@ export const LoginForm = () => {
   })
   .then(function (response) {
     if (response.ok) {
-      setError(false)
-
-    } else {
       setError(true)
+      
+    } else {
+      setError(false)
     }
   })
   .catch(function (error) {
@@ -35,24 +36,18 @@ export const LoginForm = () => {
  return(
     <>
         <div className="subHeader">
-            <h3>LogIn</h3>
+            <h3>Register</h3>
         </div>
         <section>
              <form className="loginForm" onSubmit={handleSubmit}>
                  <input type="text" className="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required autoFocus />
                  <input type="password" value={pass} onChange={e => setPass(e.target.value)} className="pass" required placeholder="Your password" />
                  
-                 <button type="submit">Sign in</button>
+                 <button type="submit">Sign up</button>
              </form>
          </section>
-         <div className="regLink">
-             <p>
-                 Haven't you an account?
-                 <a href="http://localhost:5173/Register" id="registerLink"> Register</a> please.
-             </p>
-         </div>
          <div className="resultLogin">
-            {error && <p>Your name or password are wrong</p>}
+            {error && <p>Change your name or password!</p>}
            
          </div>
     </>
