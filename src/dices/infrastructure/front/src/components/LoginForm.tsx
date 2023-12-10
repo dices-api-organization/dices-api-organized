@@ -7,19 +7,31 @@ export const LoginForm = () => {
  const [error, setError] = useState<boolean>(false)
 
 
- const handleSubmit = (e: { preventDefault: () => void }) => {
+ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (name === '' || pass === '') {
-        setError(true)
-        return
+    
+   fetch('http://localhost:3000/userLogin', {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name: name,
+      password: pass
+    })
+  })
+  .then(function (response) {
+    if (response.ok) {
+        console.log('Ok!!');
     } else {
-        setError(false)
-        const {message, loading} = useFetch('https://localhost:3000/userLogin')
-        if (message) {
-            s
-        }
+      console.log("Respuesta de red OK pero respuesta HTTP no OK");
     }
- }
+  })
+  .catch(function (error) {
+    console.log("Hubo un problema con la petición Fetch:" + error.message);
+  })
+}
  return(
     <>
         <div className="subHeader">
@@ -29,7 +41,8 @@ export const LoginForm = () => {
              <form className="loginForm" onSubmit={handleSubmit}>
                  <input type="text" className="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required autoFocus />
                  <input type="password" value={pass} onChange={e => setPass(e.target.value)} className="pass" required placeholder="Your password" />
-                 <button>Sign in</button>
+                 
+                 <button type="submit">Sign in</button>
              </form>
          </section>
          <div className="regLink">
@@ -39,9 +52,8 @@ export const LoginForm = () => {
              </p>
          </div>
          <div className="resultLogin">
-            {error && <p>You need to fill all fields</p>}
-            {loading && <p>Loading...</p>}
-            {}
+            {/* {error && <p>You need to fill all fields</p>} */}
+           
          </div>
     </>
  )

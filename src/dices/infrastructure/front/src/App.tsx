@@ -2,22 +2,20 @@ import './App.css'
 import { useFetch } from './assets/useFetch'
 import { Header } from './components/Header'
 import { LoginForm } from './components/LoginForm'
+import {Routes, Route} from 'react-router-dom'
 
-function App() {
+function App(): JSX.Element {
   
   return (
     <>
         <Header />
-        <LoginForm />
-            
-        
+       <Routes>
+        <Route path='/' element={<LoginForm />} />
+
+        </Routes>
         <div className="result">
 
         </div>
-        <div className="App">
-         <h1>{message}</h1>
-        </div>
-       
     </>
   )
 }
