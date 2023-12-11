@@ -20,9 +20,7 @@ export const RegisterForm = () => {
       password: pass
     })
   })
-  .then((response) => {
-    console.log(response);
-    
+  .then((response) => {    
     if (response.ok) {
       setSuccess(true)
       

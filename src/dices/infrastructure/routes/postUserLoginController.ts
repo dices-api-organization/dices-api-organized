@@ -9,8 +9,8 @@ export const postUserLoginController = (req: Request, res: Response) => {
       password: password
     })
     .then((value: unknown) => {
-      if (value) res.status(200).send(value);
-      else res.status(404).send(value);
+      if (value) res.status(200).json(value);
+      else res.status(404).json(null);
     })
     .catch((error) => {
       console.log(error);

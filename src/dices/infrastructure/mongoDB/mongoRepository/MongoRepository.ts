@@ -6,7 +6,6 @@ export class MongoGameRepository implements GameRepository {
   async postNewUser(newUser: Player): Promise<boolean> {
     if(newUser.name === 'Anonim'){
       const isRegistered = await UserModel.findOne({
-        name:newUser.name,
         password: newUser.password
       })
       if (isRegistered) {
@@ -19,6 +18,7 @@ export class MongoGameRepository implements GameRepository {
     } else {
       const isRegistered = await UserModel.find({
         name: newUser.name,
+        password: newUser.password
       })
       if (isRegistered) {
         console.log('false');

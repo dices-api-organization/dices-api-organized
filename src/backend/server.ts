@@ -6,6 +6,11 @@ import { json, urlencoded } from 'body-parser';
 import { dicesRouter } from '../dices/infrastructure/routes/Routes';
 import path = require('path');
 import '../dices/infrastructure/mongoDB/mongoConnectionDB';
+import { authMiddleware } from './middleware/authMiddleware';
+import { encrypt } from './middleware/encrypt';
+
+const hash = encrypt('hola')
+
 dotenv.config();
 
 export const port = process.env.PORT ?? 3001;

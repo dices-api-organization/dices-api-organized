@@ -6,13 +6,13 @@ export const postUserRegisterController = async (
   res: Response
 ) => {
   const { name, password } = req.body;
-  const isRegistered = await useCases.postUser({
-    name: name,
-    password: password
-  });
-  if (!isRegistered) {
-    res.status(401).json(name);
-  } else {
-    res.status(201).json(name);
-  }
+  const isRegistered =  useCases.postUser({
+      name: name,
+      password: password
+    });
+    if (!isRegistered) {
+        res.status(201).json(name);
+    } else {
+      res.status(401).json(null);
+    }
 };
