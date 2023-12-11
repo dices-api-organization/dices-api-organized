@@ -4,12 +4,11 @@ export const RegisterForm = () => {
  const [name, setName] = useState<string>('')
  const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
+ const [success, setSuccess] = useState<boolean>(false)
 
 
  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(name);
-    
    fetch('http://localhost:3000/userRegister', {
     method: 'POST',
     mode: 'cors',
@@ -17,21 +16,27 @@ export const RegisterForm = () => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      name: name,
+      name: name || 'Anonim',
       password: pass
     })
   })
-  .then(function (response) {
+  .then((response) => {
+    console.log(response);
+    
     if (response.ok) {
-      setError(true)
+      setSuccess(true)
       
     } else {
-      setError(false)
+      setError(true)
     }
   })
   .catch(function (error) {
     console.log("Fetch problems:" + error.message);
   })
+  setTimeout(() => {
+    setError(false)
+    setSuccess(false)
+  }, 3000)
 }
  return(
     <>
@@ -40,7 +45,7 @@ export const RegisterForm = () => {
         </div>
         <section>
              <form className="loginForm" onSubmit={handleSubmit}>
-                 <input type="text" className="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required autoFocus />
+                 <input type="text" className="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" autoFocus />
                  <input type="password" value={pass} onChange={e => setPass(e.target.value)} className="pass" required placeholder="Your password" />
                  
                  <button type="submit">Sign up</button>
@@ -48,6 +53,7 @@ export const RegisterForm = () => {
          </section>
          <div className="resultLogin">
             {error && <p>Change your name or password!</p>}
+            {success && <p>{name} Wellcome to the best dices game !</p>}
            
          </div>
     </>

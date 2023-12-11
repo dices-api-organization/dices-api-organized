@@ -11,8 +11,8 @@ export const postUserRegisterController = async (
     password: password
   });
   if (!isRegistered) {
-    res.status(201).json(name);
+    res.status(401).json(name);
   } else {
-    res.status(409).json(name);
+    res.status(201).json(name);
   }
 };
