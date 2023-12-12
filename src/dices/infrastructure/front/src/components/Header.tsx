@@ -1,11 +1,10 @@
 import dices from '../assets/redDices.png'
 
-export const Header = () => {
-
-    return (
+export const Header:React.FC<{title: string, player: string}> = ({title, player} ) => {
+    return(
     <>
         <div id="header">
-            <h1> Wellcome to Dices Game!!</h1>
+            <h2> Wellcome {player}{title} to Dices Game!!</h2>
         </div>
         <div id="imageDices">
             <img src={dices} alt="red dices"/>
