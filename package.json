@@ -7,7 +7,7 @@
     "test": "npx jest",
     "prettier-format": "npx prettier --config .prettierrc 'src/**/*.ts' --write",
     "dev:watcher": "npx nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "dev": "npx tsc --jsx 'react-jsx' && npx ts-node-dev  src/backend/server.ts",
+    "dev": "npx ts-node-dev  src/backend/server.ts",
     "build": "npx tsc"
   },
   "keywords": [],
