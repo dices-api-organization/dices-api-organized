@@ -4,7 +4,6 @@ export const LoginForm = () => {
  const [name, setName] = useState<string>('')
  const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
- const [success, setSuccess] = useState<boolean>(false)
 
 
  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,7 +21,7 @@ export const LoginForm = () => {
   })
   .then((response) => {
     if (response.ok) {
-      setSuccess(true)
+      setError(false)
 
     } else {
       setError(true)
@@ -31,10 +30,6 @@ export const LoginForm = () => {
   .catch(function (error) {
     console.log("Fetch problems:" + error.message);
   })
-  setTimeout(() => {
-    setError(false)
-    setSuccess(false)
-  }, 3000)
 }
  return(
     <>
@@ -57,8 +52,7 @@ export const LoginForm = () => {
          </div>
          <div className="resultLogin">
             {error && <p>Your name or password are wrong</p>}
-            {success && <p>Wellcome {name}</p>}
-
+           
          </div>
     </>
  )
