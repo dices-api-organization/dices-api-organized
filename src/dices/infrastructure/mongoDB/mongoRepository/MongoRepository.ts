@@ -1,34 +1,33 @@
+import { compare, encrypt } from '../../../../backend/middleware/encrypt';
 import { Player } from '../../../domain/entities/Player';
 import { GameRepository } from '../../../domain/repositories/GameRepository';
 import { UserModel } from '../mongoModel/UserSchema';
 
 export class MongoGameRepository implements GameRepository {
   async postNewUser(newUser: Player): Promise<boolean> {
-    if(newUser.name === 'Anonim'){
-      const isRegistered = await UserModel.findOne({
+    const hashPassword = await encrypt(newUser.password)
+
+      const isRegistered = await UserModel.find({
         name:newUser.name,
-        password: newUser.password
       })
       if (isRegistered) {
-      console.log('false');
+        const comparePasswords = async () => { 
+          isRegistered.map(async (value) => {
+          const isSamePass = await compare(newUser.password, value.password)
+          if (isSamePass)
+            return true;
+        })
+      }
+      const comparation = await comparePasswords()
+      
+        console.log(' ahi va '+ comparation)
+      
+      console.log('false  ');
       return false;
       }
       console.log('true');
       await UserModel.create(newUser);
       return true;
-    } else {
-      const isRegistered = await UserModel.find({
-        name: newUser.name,
-      })
-      if (isRegistered) {
-        console.log('false');
-        return false;
-        }
-        console.log('true');
-        await UserModel.create(newUser);
-        return true;
-    }
-    
   }
 
   async postUserLogin(newUser: Player): Promise<Player | null> {

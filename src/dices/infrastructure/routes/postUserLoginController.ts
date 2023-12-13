@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { useCases } from '../mongoDependencyInjection';
 
-export const postUserLoginController = (req: Request, res: Response) => {
+export const postUserLoginController = async (req: Request, res: Response) => {
+  try{
   const { name, password } = req.body;
   useCases
     .postUserLogin({
@@ -15,4 +16,7 @@ export const postUserLoginController = (req: Request, res: Response) => {
     .catch((error) => {
       console.log(error);
     });
+  } catch (err) {
+    throw new Error('Error:  ' + err)
+  }
 };
