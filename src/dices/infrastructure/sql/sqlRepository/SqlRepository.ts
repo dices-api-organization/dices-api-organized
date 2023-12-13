@@ -233,7 +233,7 @@ export class mySqlGameRepository implements GameRepository {
        
         await mySqlGame.sync({alter:true}).then(()=>{
 
-          
+         
 
           let dice1Random = Math.floor(Math.random() * 7);
           let dice2Random = Math.floor(Math.random() * 7);
@@ -254,6 +254,60 @@ export class mySqlGameRepository implements GameRepository {
           .catch(()=>{
           console.log('Error syncing table and model for GAMES.')
           });
+
+          let totalLosses = 0;
+          let totalWins = 0;
+          await mySqlGame.sync({alter:true}).then(()=>{
+            
+            return mySqlGame.findAll({
+              attributes: [
+                [sequelizeConnection.fn('COUNT', sequelizeConnection.col('winOrLose')), 'numberOfLosses']
+              ],
+              where: {
+                player_id: playerId,
+                winOrLose: false
+              }
+
+            });}).then((data)=>{
+              
+              data.forEach((element)=>{
+                totalLosses = element.toJSON().numberOfLosses;
+
+              })
+            })
+
+
+
+            await mySqlGame.sync({alter:true}).then(()=>{
+            
+              return mySqlGame.findAll({
+                attributes: [
+                  [sequelizeConnection.fn('COUNT', sequelizeConnection.col('winOrLose')), 'numberOfWins']
+                ],
+                where: {
+                  player_id: playerId,
+                  winOrLose: true
+                }
+  
+              });}).then((data)=>{
+                
+                data.forEach((element)=>{
+                  totalWins = element.toJSON().numberOfWins;
+  
+                })
+              })
+              let playerTotalGames = totalLosses+totalWins;
+              let playerSuccessRate = (totalWins / playerTotalGames)*100;
+
+         
+          await mySqlGame.sync({alter:true}).then(()=>{
+            return mySqlGame.update({ success_rate: playerSuccessRate }, {
+              where: {
+                player_id: playerId
+              }
+            });
+             
+         })
 
           
         return didItWork;
