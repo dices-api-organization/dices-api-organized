@@ -1,8 +1,10 @@
-
+ 
 // If these scripts don't work, try docker-compose down -v to delete all past volumes, and restarting the containers
 
 
 import Sequelize, { QueryError } from 'sequelize';
+
+
 
 
 const sequelize = new Sequelize.Sequelize("dices-api-mysql-db", "root", "password",{dialect:'mysql'});
@@ -30,6 +32,8 @@ const sequelize = new Sequelize.Sequelize("dices-api-mysql-db", "root", "passwor
 
 });
 
+
+
 const Game = sequelize.define('gameTest', {
 
   player_id:{type: Sequelize.DataTypes.INTEGER,
@@ -51,7 +55,7 @@ const Game = sequelize.define('gameTest', {
 
 Player.sync({force:true}).then(()=>{
 
-const testPlayer = Player.build({ player_password: "123t4rt56"});
+const testPlayer = Player.build({ player_password: "123t4rt56", success_rate: 5});
 return testPlayer.save();
 }).then(()=>{
 
@@ -65,7 +69,7 @@ console.log('Error syncing table and model for PLAYER.')
 
 Player.sync({alter:true}).then(()=>{
  
-  const testPlayer = Player.build({ player_name: "Alan",player_password: "123t4rt56t"});
+  const testPlayer = Player.build({ player_name: "Alan",player_password: "123t4rt56t", success_rate: 2});
   return testPlayer.save();
   }).then(()=>{
   
@@ -87,7 +91,7 @@ Player.sync({alter:true}).then(()=>{
 
 // Find all players, with success rates
 
-Player.sync({alter:true}).then(()=>{
+Player.sync().then(()=>{
   return Player.findAll({
    attributes: {
      exclude: ['player_password']
@@ -97,13 +101,81 @@ Player.sync({alter:true}).then(()=>{
   data.forEach((element)=>{
     console.log(element.toJSON())
   })
-})
+}) 
+
+// Find ranking of players ordered by sucess rates
+
+Player.sync().then(()=>{
+  return Player.findAll({
+
+    attributes:[
+      'player_name', 'success_rate'
+    ],
+    group: ['player_name', 'success_rate'],
+    order:[
+      [sequelize.fn('max', sequelize.col('success_rate')), 'DESC'],
+    ]
+  }); 
+}).then((data)=>{
+  data.forEach((element)=>{
+    console.log(element.toJSON())
+  })
+}) 
+
+
+
+//Find total average of success rates
+
+  Player.sync().then(()=>{
+  return Player.findAll({
+   attributes: [[sequelize.fn('AVG', sequelize.col('success_rate')),'total_avg']]
+    
+ }); 
+}).then((data)=>{
+  data.forEach((element)=>{
+    console.log(element.toJSON())
+  })
+})   
+
+// Get highest WINNER
+
+ Player.sync().then(()=>{
+  return Player.findOne({
+
+    attributes:[
+      'player_name', 'success_rate'
+    ],
+    group: ['player_name', 'success_rate'],
+    order:[
+      [sequelize.fn('max', sequelize.col('success_rate')), 'DESC'],
+    ]
+  }); 
+}).then((data)=>{
+ console.log(data?.toJSON())
+})   
+
+// Get lowest LOSER
+ Player.sync().then(()=>{
+  return Player.findOne({
+
+    attributes:[
+      'player_name', 'success_rate'
+    ],
+    group: ['player_name', 'success_rate'],
+    order:[
+      [sequelize.fn('max', sequelize.col('success_rate')), 'ASC'],
+    ]
+  }); 
+}).then((data)=>{
+ console.log(data?.toJSON())
+})  
+
 
 // GAMES
 
 // Create game AND first game
 
-  Game.sync({force:true}).then(()=>{
+   Game.sync({force:true}).then(()=>{
     
     const testGame = Game.build({ player_id: 1, dice_1: 3, dice_2: 5, winOrLose: false});
     return testGame.save();
@@ -141,7 +213,7 @@ Player.sync({alter:true}).then(()=>{
 
      // Get list of all games from a player
 
-     Game.sync({alter:true}).then(()=>{
+     Game.sync().then(()=>{
       return Game.findAll({
 where: {player_id: 1}
      }); 
@@ -149,4 +221,4 @@ where: {player_id: 1}
       data.forEach((element)=>{
         console.log(element.toJSON())
       })
-    })
+    }) 
