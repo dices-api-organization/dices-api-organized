@@ -7,34 +7,27 @@ export class MongoGameRepository implements GameRepository {
   async postNewUser(newUser: Player): Promise<boolean> {
     const hashPassword = await encrypt(newUser.password);
 
-    const isRegistered = await UserModel.find({
-      name: newUser.name
-    });
-    const comparePasswords = isRegistered.map(
-      async (value: { password: string }) => {
-        const isSamePass = () => {
-          return compare(newUser.password, value.password);
-        };
-        const isPassRegistered = await isSamePass();
-        if (isPassRegistered) {
-          console.log('Login please!! There is user with your credentials');
-          return null;
-        } else {
-          return value;
-        }
-      }
+    const isRegistered = await UserModel.find({ name: newUser.name });
+
+    const comparePasswords = await Promise.all(
+      isRegistered.map(async (user: { password: string }) => {
+        const isSamePass = await compare(newUser.password, user.password);
+        return isSamePass;
+      })
     );
-    
-    if (comparePasswords.length) {
-      console.log('false  ' + comparePasswords);
+
+    if (comparePasswords.some(match => match)) {
+      console.log('Login please!! There is a user with your credentials');
       return false;
     } else {
       const newUserRegistered: Player = {
         name: newUser.name,
         password: hashPassword
       };
+
       console.log('true');
-      await UserModel.create(newUserRegistered);
+      const createdUser = await UserModel.create(newUserRegistered);
+      console.log('User created with ID:', createdUser._id);
       return true;
     }
   }
@@ -42,38 +35,26 @@ export class MongoGameRepository implements GameRepository {
   async postUserLogin(newUser: Player): Promise<Player | null> {
     const hashPassword = await encrypt(newUser.password);
 
-    const isNameRegistered = await UserModel.find({
-      name: newUser.name
-    });
-    const comparePasswords = isNameRegistered.map(
-      async (value: { password: string }) => {
-        const isSamePass = async (): Promise<boolean> => {
-          return compare(newUser.password, value.password);
-        };
-        const isPassRegistered = await isSamePass();
-        if (isPassRegistered) {
-          console.log('Wellcome ');
-          return value;
-        }
+    const isNameRegistered = await UserModel.find({ name: newUser.name });
+
+    if (isNameRegistered) {
+      const comparePasswords = await Promise.all(
+        isNameRegistered.map(async (user: { password: string }) => {
+          const isSamePass = compare(newUser.password, user.password);
+          return isSamePass;
+        })
+      );
+
+      if (comparePasswords.some(match => match)) {
+        console.log('Welcome');
+        return newUser;
+      } else {
+        console.log('false');
+        return null;
       }
-    );
-    if (comparePasswords.length == 1) {
-      console.log('Yesss ' + comparePasswords);
-      return newUser;
     } else {
-      console.log('false');
+      console.log('User not found');
       return null;
     }
-
-    // const isPassRegistered = await UserModel.findOne({
-    //   password: newUser.password
-    // });
-    // if (isPassRegistered && isNameRegistered) {
-    //   console.log('success', newUser.name);
-    //   return newUser;
-    // } else {
-    //   console.log('try  again', newUser.name);
-    //   return null;
-    // }
   }
 }
