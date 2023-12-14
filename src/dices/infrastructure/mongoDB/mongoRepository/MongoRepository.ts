@@ -4,6 +4,7 @@ import { GameRepository } from '../../../domain/repositories/GameRepository';
 import { UserModel } from '../mongoModel/UserSchema';
 
 export class MongoGameRepository implements GameRepository {
+  
   async postNewUser(newUser: Player): Promise<boolean> {
     const hashPassword = await encrypt(newUser.password);
 

@@ -4,7 +4,7 @@ export const Play = () => {
     const [dice1, setDice1] = useState(0)
     const [dice2, setDice2] = useState(0)
 
-    let allThrows = [{}]
+    let allThrowsSession = [{}]
     let arrDice:number[] = []
     const handlePlay = () => {
         let i = 0;
@@ -21,13 +21,24 @@ export const Play = () => {
         }
         setDice1(arrDice[0])
         setDice2(arrDice[1])
-        allThrows.push(newThrow)
-        console.log(allThrows)
+        allThrowsSession.push(newThrow)
+        //postNewDicesThrow(newThrow)
     }
 
+    /* const postNewDicesThrow = (newThrow:object) => {
+        fetch('http://localhost:3000/userRegister', {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json',
+              'auth': token
+            },
+            body: JSON.stringify(newThrow)
+          })
+    } */
     return(
         <>
-            <h3>Dice 1: <span>{dice1} </span>  </h3>
+            <h3>Dice 1: <span>{dice1} </span></h3>
             <h3>Dice 2: <span>{dice2}</span></h3>
             {dice1 + dice2 == 7 && <h1><span>Winner</span></h1>}
             <nav>
