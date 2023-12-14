@@ -1,20 +1,20 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+
+ 
 
 export const SelectBD = () => {
-    
-    const navigate = useNavigate();
-    const routeChange = () =>{ 
-        let path = `Login`; 
-        navigate(path);
-    }
+   const navigate = useNavigate();
 
+    const routeChange = (path:string) =>{  
+        navigate(path);
+}
     const handleButtonMongoDB = () => {
 
-        routeChange()
+        routeChange(`login`)
     }
     const handleButtonMySQL = () => {
 
-        routeChange()
+        routeChange(`login`)
     }
     
     return(

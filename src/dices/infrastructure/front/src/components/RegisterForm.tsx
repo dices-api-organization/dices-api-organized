@@ -1,6 +1,12 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
+
 
 export const RegisterForm = () => {
+  const navigate = useNavigate();
+  const routeChange = (path:string) =>{  
+    navigate(path);
+}
  const [name, setName] = useState<string>('')
  const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
@@ -25,7 +31,9 @@ export const RegisterForm = () => {
     
     if (response.ok) {
       setSuccess(true)
-      
+      setTimeout(() => {
+       routeChange('play')
+      },1000)
     } else {
       setError(true)
     }
@@ -53,7 +61,7 @@ export const RegisterForm = () => {
          </section>
          <div className="resultLogin">
             {error && <p>Change your name or password!</p>}
-            {success && <p>{name} Wellcome to the best dices game !</p>}
+            {success && <p>Wellcome <span>{name}</span> !!! to the best dices game !</p>}
            
          </div>
     </>

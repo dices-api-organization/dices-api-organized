@@ -1,12 +1,19 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm = () => {
+  const navigate = useNavigate();
+  const routeChange = (path:string) =>{  
+    navigate(path);
+}
  const [name, setName] = useState<string>('')
  const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
+ const [success, setSuccess] = useState<boolean>(false)
 
 
  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
     e.preventDefault();
     fetch('http://localhost:3000/userLogin', {
     method: 'POST',
@@ -21,11 +28,17 @@ export const LoginForm = () => {
   })
   .then((response) => {
     if (response.ok) {
-      setError(false)
-
+      setSuccess(true)
+      setTimeout(() => {
+        routeChange('../play')
+      },1000)
     } else {
       setError(true)
     }
+    setTimeout(() => {
+      setError(false)
+      setSuccess(false)
+    }, 3000)
   })
   .catch(function (error) {
     console.log("Fetch problems:" + error.message);
@@ -47,12 +60,13 @@ export const LoginForm = () => {
          <div className="regLink">
              <p>
                  Haven't you an account?
-                 <a href="http://localhost:5173/Register" id="registerLink"> Register</a> please.
+                 <a href="http://localhost:5173/register" id="registerLink"> Register</a> please.
              </p>
          </div>
          <div className="resultLogin">
             {error && <p>Your name or password are wrong</p>}
-           
+            {success && <p>Hello again <span>{name}</span> !!! Let's play to dices game !</p>}
+
          </div>
     </>
  )
