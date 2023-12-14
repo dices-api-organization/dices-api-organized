@@ -1,24 +1,35 @@
 import { useState } from "react"
 
 export const Play = () => {
-    const [dice, setDice] = useState(0)
+    const [dice1, setDice1] = useState(0)
+    const [dice2, setDice2] = useState(0)
+
+    let allThrows = [{}]
+    let arrDice:number[] = []
     const handlePlay = () => {
         let i = 0;
-        setDice(0);
-        
+      
         while(i < 2){
-            let rand = 0;
-            rand = Math.floor((Math.random() * 6) + 1)
-            setDice(dice + rand)
-            console.log(dice)
+            const rand = () => Math.floor((Math.random() * 6) + 1)
+            arrDice[i] = rand()
+            console.log(i, arrDice[i])
             i++;
         }
-        return dice
+        const newThrow = {
+            dice1: arrDice[0],
+            dice2: arrDice[1]
+        }
+        setDice1(arrDice[0])
+        setDice2(arrDice[1])
+        allThrows.push(newThrow)
+        console.log(allThrows)
     }
 
     return(
         <>
-            {dice}
+            <h3>Dice 1: <span>{dice1} </span>  </h3>
+            <h3>Dice 2: <span>{dice2}</span></h3>
+            {dice1 + dice2 == 7 && <h1><span>Winner</span></h1>}
             <nav>
                 <button onClick={handlePlay}>Play</button>
                 <button>Update</button>
