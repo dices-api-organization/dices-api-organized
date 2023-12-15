@@ -2,10 +2,17 @@ import { compare, encrypt } from '../../../../backend/middleware/encrypt';
 import { Player } from '../../../domain/entities/Player';
 import { GameRepository } from '../../../domain/repositories/GameRepository';
 import { UserModel } from '../mongoModel/UserSchema';
+import jwt  from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { UserSessionToken } from '../../../domain/entities/UserSessionToken';
+
+dotenv.config()
+
+const secret = process.env.SECRET_KEY ?? 'sin secretos';
 
 export class MongoGameRepository implements GameRepository {
   
-  async postNewUser(newUser: Player): Promise<boolean> {
+  async postNewUser(newUser: Player): Promise<UserSessionToken | null> {
     const hashPassword = await encrypt(newUser.password);
 
     const isRegistered = await UserModel.find({ name: newUser.name });
@@ -19,7 +26,7 @@ export class MongoGameRepository implements GameRepository {
 
     if (comparePasswords.some(match => match)) {
       console.log('Login please!! There is a user with your credentials');
-      return false;
+      return null;
     } else {
       const newUserRegistered: Player = {
         name: newUser.name,
@@ -29,26 +36,36 @@ export class MongoGameRepository implements GameRepository {
       console.log('true');
       const createdUser = await UserModel.create(newUserRegistered);
       console.log('User created with ID:', createdUser._id);
-      return true;
+      const token = jwt.sign({ id: createdUser._id.toString(), name: createdUser.name }, secret, {
+        expiresIn: '2 days',
+      })
+ 
+      return { id:createdUser.id , name:createdUser.name , token: token };
     }
   }
 
-  async postUserLogin(newUser: Player): Promise<Player | null> {
+  async postUserLogin(newUser: Player): Promise<UserSessionToken | null> {
     const hashPassword = await encrypt(newUser.password);
 
     const isNameRegistered = await UserModel.find({ name: newUser.name });
 
     if (isNameRegistered) {
       const comparePasswords = await Promise.all(
-        isNameRegistered.map(async (user: { password: string }) => {
-          const isSamePass = compare(newUser.password, user.password);
-          return isSamePass;
+        isNameRegistered.find(async (user: { password: string }) => {
+          const isSamePass = await compare(newUser.password, user.password);
+          if (isSamePass)
+            return user;
         })
       );
 
       if (comparePasswords.some(match => match)) {
         console.log('Welcome');
-        return newUser;
+        
+        const token = jwt.sign({ id: user ._id.toString(), name: createdUser.name }, secret, {
+          expiresIn: '2 days',
+        })
+   
+        return { id:createdUser.id , name:createdUser.name , token: token };
       } else {
         console.log('false');
         return null;
