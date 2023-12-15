@@ -33,7 +33,6 @@ export class MongoGameRepository implements GameRepository {
         password: hashPassword
       };
 
-      console.log('true');
       const createdUser = await UserModel.create(newUserRegistered);
       console.log('User created with ID:', createdUser._id);
       const token = jwt.sign({ id: createdUser._id.toString(), name: createdUser.name }, secret, {
@@ -56,7 +55,6 @@ export class MongoGameRepository implements GameRepository {
         const token = jwt.sign({ id: isUserRegistered.id, name: isUserRegistered.name }, secret, {
           expiresIn: '2 days',
         })
-
         return { id: isUserRegistered.id, name: isUserRegistered.name, token: token }
       } else {
         console.log('User not found');
@@ -65,7 +63,6 @@ export class MongoGameRepository implements GameRepository {
     } else {
       console.log('User not found');
       return null;
-
     }
   }
 }
