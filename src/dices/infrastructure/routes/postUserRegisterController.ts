@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { useCases } from '../mongoDependencyInjection';
+import { UserSessionToken } from '../../domain/entities/UserSessionToken';
 
 export const postUserRegisterController = async (
   req: Request,
@@ -12,9 +13,9 @@ export const postUserRegisterController = async (
       password: password
     });
     if (!isRegistered) {
-      res.status(401).json(name);
+      res.status(401).json(null);
     } else {
-      res.status(201).json(name);
+      res.status(201).json(isRegistered);
     }
   }catch (err) {
     throw new Error('Error: ' + err)

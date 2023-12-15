@@ -2,7 +2,7 @@ import { compare, encrypt } from '../../../../backend/middleware/encrypt';
 import { Player } from '../../../domain/entities/Player';
 import { GameRepository } from '../../../domain/repositories/GameRepository';
 import { UserModel } from '../mongoModel/UserSchema';
-import jwt  from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { UserSessionToken } from '../../../domain/entities/UserSessionToken';
 
@@ -11,7 +11,7 @@ dotenv.config()
 const secret = process.env.SECRET_KEY ?? 'sin secretos';
 
 export class MongoGameRepository implements GameRepository {
-  
+
   async postNewUser(newUser: Player): Promise<UserSessionToken | null> {
     const hashPassword = await encrypt(newUser.password);
 
@@ -39,8 +39,8 @@ export class MongoGameRepository implements GameRepository {
       const token = jwt.sign({ id: createdUser._id.toString(), name: createdUser.name }, secret, {
         expiresIn: '2 days',
       })
- 
-      return { id:createdUser.id , name:createdUser.name , token: token };
+      console.log(token)
+      return { id: createdUser.id, name: createdUser.name, token: token };
     }
   }
 
@@ -50,29 +50,23 @@ export class MongoGameRepository implements GameRepository {
     const isNameRegistered = await UserModel.find({ name: newUser.name });
 
     if (isNameRegistered) {
-      const comparePasswords = await Promise.all(
-        isNameRegistered.find(async (user: { password: string }) => {
-          const isSamePass = await compare(newUser.password, user.password);
-          if (isSamePass)
-            return user;
-        })
-      );
+      const isUserRegistered = isNameRegistered.find(objeto => compare(newUser.password, objeto.password))
 
-      if (comparePasswords.some(match => match)) {
-        console.log('Welcome');
-        
-        const token = jwt.sign({ id: user ._id.toString(), name: createdUser.name }, secret, {
+      if (isUserRegistered) {
+        const token = jwt.sign({ id: isUserRegistered.id, name: isUserRegistered.name }, secret, {
           expiresIn: '2 days',
         })
-   
-        return { id:createdUser.id , name:createdUser.name , token: token };
+
+        return { id: isUserRegistered.id, name: isUserRegistered.name, token: token }
       } else {
-        console.log('false');
+        console.log('User not found');
         return null;
       }
     } else {
       console.log('User not found');
       return null;
+
     }
   }
 }
+
