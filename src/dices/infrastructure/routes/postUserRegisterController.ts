@@ -1,13 +1,16 @@
 import { Request, Response } from 'express';
-import { useCases } from '../mongoDependencyInjection';
-import { useCasesMysql }  from '../sqlDependenyInjection';
+
+
+import  {finalUseCases}  from './injectionDecider';
+
+
 
 export const postUserRegisterController = async (
   req: Request,
   res: Response
 ) => {
   const { name, password } = req.body;
-  const isRegistered = await useCasesMysql.postUser({
+  const isRegistered = await finalUseCases.postUser({
     name: name,
     password: password
   });
