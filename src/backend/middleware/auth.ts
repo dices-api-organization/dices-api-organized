@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt, {JwtPayload} from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import dotenv from 'dotenv'
 import { dot } from 'node:test/reporters';
 
@@ -7,10 +7,9 @@ dotenv.config()
 
 const secret = process.env.SECRET_KEY || 'sin secretos';
 
-
 export interface CustomRequest extends Request {
         token: string | JwtPayload;
-       }
+}
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
         try {
