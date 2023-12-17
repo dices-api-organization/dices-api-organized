@@ -343,7 +343,7 @@ export class mySqlGameRepository implements GameRepository {
 
 
 
-      async listAllGamesFromPlayer(playerId: number): Promise<string> {
+      async listAllGamesFromPlayer(playerId: number): Promise<string | null> {
         
         let finalList = '';
        
