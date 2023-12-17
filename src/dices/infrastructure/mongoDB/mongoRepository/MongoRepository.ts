@@ -24,7 +24,7 @@ export class MongoGameRepository implements GameRepository {
 
     const comparePasswords = await Promise.all(
       isRegistered.map(async (user: { password: string }) => {
-        const isSamePass = await compare(newUser.password, user.password);
+        const isSamePass = compare(newUser.password, user.password);
         return isSamePass;
       })
     );
