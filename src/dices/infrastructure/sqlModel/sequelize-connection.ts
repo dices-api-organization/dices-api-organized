@@ -1,18 +1,25 @@
+ 
+// If these scripts don't work, try docker-compose down -v to delete all past volumes, and restarting the containers
 
 
-const Sequelize = require('sequelize');
+import Sequelize, { QueryError } from 'sequelize';
 
-const sequelize = new Sequelize('dices_api_mysql_db', 'root', 'password',{dialect:'mysql'});
 
-sequelize.authenticate().then(()=> {
 
-  console.log("Connection successful!");
 
-}).catch((err: Error) =>{
-  console.log("Error connecting to database!");
-}); 
+const sequelize = new Sequelize.Sequelize("dices-api-mysql-db", "root", "password",{dialect:'mysql'});
 
-const Player = sequelize.define('playerTest', {
+    sequelize.authenticate().then(()=> {
+    
+      console.log("Connection successful!");
+    
+    }).catch((err: Error) =>{
+      console.log("Error connecting to database!");
+    });
+
+
+
+  const Player = sequelize.define('playerTest', {
 
   player_name:{type: Sequelize.DataTypes.STRING,
     allowNull: true,
@@ -24,6 +31,8 @@ const Player = sequelize.define('playerTest', {
   success_rate:{type: Sequelize.DataTypes.INTEGER}
 
 });
+
+
 
 const Game = sequelize.define('gameTest', {
 
@@ -38,32 +47,178 @@ const Game = sequelize.define('gameTest', {
 
 });
 
+// PLAYER
+
+// Create player table AND first player
 
 // Change below to "force: true" to change column datatypes and create the table again from zero, and 'alter: true' to modify existing
 
 Player.sync({force:true}).then(()=>{
-//Working with our updated file
-const testPlayer = Player.build({ player_password: "123t4rt56"});
+
+const testPlayer = Player.build({ player_password: "123t4rt56", success_rate: 5});
 return testPlayer.save();
 }).then(()=>{
 
-console.log("User added to database!");
+console.log("Players table created with new user!");
 })
 .catch(()=>{
 console.log('Error syncing table and model for PLAYER.')
 });
 
+// Create new player
+
+Player.sync({alter:true}).then(()=>{
+ 
+  const testPlayer = Player.build({ player_name: "Alan",player_password: "123t4rt56t", success_rate: 2});
+  return testPlayer.save();
+  }).then(()=>{
+  
+  console.log("User added to Players database!");
+  })
+  .catch(()=>{
+  console.log('Error creating new PLAYER.')
+  });
+
+
+  // Modify player name
+  Player.sync({alter:true}).then(()=>{
+   Player.update({ player_name: "Doe" }, {
+    where: {
+      player_name: "Alan"
+    }
+  }); 
+});
+
+// Find all players, with success rates
+
+Player.sync().then(()=>{
+  return Player.findAll({
+   attributes: {
+     exclude: ['player_password']
+   }
+ }); 
+}).then((data)=>{
+  data.forEach((element)=>{
+    console.log(element.toJSON())
+  })
+}) 
+
+// Find ranking of players ordered by sucess rates
+
+Player.sync().then(()=>{
+  return Player.findAll({
+
+    attributes:[
+      'player_name', 'success_rate'
+    ],
+    group: ['player_name', 'success_rate'],
+    order:[
+      [sequelize.fn('max', sequelize.col('success_rate')), 'DESC'],
+    ]
+  }); 
+}).then((data)=>{
+  data.forEach((element)=>{
+    console.log(element.toJSON())
+  })
+}) 
+
+
+
+//Find total average of success rates
+
+  Player.sync().then(()=>{
+  return Player.findAll({
+   attributes: [[sequelize.fn('AVG', sequelize.col('success_rate')),'total_avg']]
+    
+ }); 
+}).then((data)=>{
+  data.forEach((element)=>{
+    console.log(element.toJSON())
+  })
+})   
+
+// Get highest WINNER
+
+ Player.sync().then(()=>{
+  return Player.findOne({
+
+    attributes:[
+      'player_name', 'success_rate'
+    ],
+    group: ['player_name', 'success_rate'],
+    order:[
+      [sequelize.fn('max', sequelize.col('success_rate')), 'DESC'],
+    ]
+  }); 
+}).then((data)=>{
+ console.log(data?.toJSON())
+})   
+
+// Get lowest LOSER
+ Player.sync().then(()=>{
+  return Player.findOne({
+
+    attributes:[
+      'player_name', 'success_rate'
+    ],
+    group: ['player_name', 'success_rate'],
+    order:[
+      [sequelize.fn('max', sequelize.col('success_rate')), 'ASC'],
+    ]
+  }); 
+}).then((data)=>{
+ console.log(data?.toJSON())
+})  
+
+
 // GAMES
 
+// Create game AND first game
 
-  Game.sync({force:true}).then(()=>{
-    //Working with our updated file
-    const testRolls = Game.build({ player_id: 1, dice_1: 3, dice_2: 5, winOrLose: false});
-    return testRolls.save();
+   Game.sync({force:true}).then(()=>{
+    
+    const testGame = Game.build({ player_id: 1, dice_1: 3, dice_2: 5, winOrLose: false});
+    return testGame.save();
     }).then(()=>{
     
-    console.log("Game added to database!");
+    console.log("Games table created and new game added to database!");
     })
     .catch(()=>{
     console.log('Error syncing table and model for GAMES.')
     });
+
+    // A specific player creates a new game
+
+    Game.sync({alter:true}).then(()=>{
+    
+      const testGame = Game.build({ player_id: 1, dice_1: 3, dice_2: 5, winOrLose: false});
+      return testGame.save();
+      }).then(()=>{
+      
+      console.log("Game added to database!");
+      })
+      .catch(()=>{
+      console.log('Error creating new GAME.')
+      }); 
+
+      // Delete all games from a player
+
+      Game.sync({alter:true}).then(()=>{
+        Game.destroy({
+         where: {
+          player_id: 1
+         }}); 
+         
+     });
+
+     // Get list of all games from a player
+
+     Game.sync().then(()=>{
+      return Game.findAll({
+where: {player_id: 1}
+     }); 
+    }).then((data)=>{
+      data.forEach((element)=>{
+        console.log(element.toJSON())
+      })
+    }) 
