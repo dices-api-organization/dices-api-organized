@@ -39,8 +39,8 @@ export class UseCases {
 
   }
 
-  async modifyPlayerName(newUser: Player, newName: string): Promise<boolean>{
-    const modifyName = await this.gameRepository.modifyPlayerName(newUser, newName);
+  async modifyPlayerName(playerId: number, newName: string): Promise<boolean>{
+    const modifyName = await this.gameRepository.modifyPlayerName(playerId, newName);
     return modifyName;
 
   }

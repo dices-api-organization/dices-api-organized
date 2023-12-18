@@ -3,9 +3,20 @@ import { GameRepository } from '../../../domain/repositories/GameRepository';
 import { mySqlGame } from '../sqlModel/MySqlGameModel';
 import { mySqlPlayer } from '../sqlModel/MySqlPlayerModel';
 import { sequelizeConnection } from '../mySqlConnectionDB';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { UserSessionToken } from '../../../domain/entities/UserSessionToken';
+
+dotenv.config()
+
+const secret = process.env.SECRET_KEY ?? 'sin secretos';
 
 export class mySqlGameRepository implements GameRepository {
-    async postNewUser(newUser: Player): Promise<boolean> {
+    async postNewUser(newUser: Player): Promise<UserSessionToken | null> {
+
+     
+
+
       const isRegistered = await mySqlPlayer.sync().then(()=>{
         return mySqlPlayer.findOne({
             where: {
@@ -15,24 +26,36 @@ export class mySqlGameRepository implements GameRepository {
       });
       if (isRegistered) {
         console.log('false');
-        return false;
+        return null;
       }
       console.log('true');
-      await mySqlPlayer.sync({alter:true}).then(()=>{
+      let resultadoFinal = await mySqlPlayer.sync({alter:true}).then(()=>{
 
         const newPlayer = mySqlPlayer.build({ player_name: newUser.name, player_password: newUser.password});
+
         return newPlayer.save();
-        }).then(()=>{
-        
-        console.log("Players table created with new user!");
+
+      
         })
-        .catch(()=>{
-        console.log('Error syncing table and model for PLAYER.')
-        });
-      return true;
+        .then((data)=>{
+          const token = jwt.sign({ id: data.toJSON().id.toString(), name: data.toJSON().player_name }, secret, {
+            expiresIn: '2 days',
+          })
+
+          return { id: data.toJSON().id, name: data.toJSON().player_name, token: token };
+
+        })
+        .catch((err)=>{
+          return null;
+        })
+
+        return resultadoFinal;
+        
+        
+      
     }
   
-    async postUserLogin(newUser: Player): Promise<Player | null> {
+    async postUserLogin(newUser: Player): Promise<UserSessionToken | null> {
       const isNameRegistered = await mySqlPlayer.sync().then(()=>{
         return mySqlPlayer.findOne({
             where: {
@@ -48,8 +71,13 @@ export class mySqlGameRepository implements GameRepository {
        }); 
       });
       if (isPassRegistered && isNameRegistered) {
+
+        const token = jwt.sign({ id: isNameRegistered.toJSON().id, name: isNameRegistered.toJSON().name }, secret, {
+          expiresIn: '2 days',
+        })
+
         console.log('success');
-        return newUser;
+        return { id: isNameRegistered.toJSON().id, name: isNameRegistered.toJSON().name, token: token };
       } else {
         console.log('try  again');
         return null;
@@ -186,7 +214,7 @@ export class mySqlGameRepository implements GameRepository {
         
         if (allPlayersRatingsFunc) {
             
-          console.log(`success, ${allPlayersRatingsFunc}`);
+          console.log(`${allPlayersRatingsFunc}`);
           return allPlayersRatingsFunc;
         } else {
           console.log('try  again');
@@ -198,23 +226,23 @@ export class mySqlGameRepository implements GameRepository {
 
 
 
-      async modifyPlayerName(newUser: Player, newName: string): Promise<boolean> {
+      async modifyPlayerName(playerId: number, newName: string): Promise<boolean> {
         const isRegistered = await mySqlPlayer.sync().then(()=>{
           return mySqlPlayer.findOne({
               where: {
-                  player_name: newUser.name
+                  _id: playerId
                 }
          }); 
         });
-        if (isRegistered) {
-          console.log('cannot change the name');
+        if (!isRegistered) {
+          
           return false;
         }
-        console.log('name changed');
+        
         await mySqlPlayer.sync({alter:true}).then(()=>{
           mySqlPlayer.update({ player_name: newName }, {
            where: {
-             player_name: newUser.name
+            _id: playerId
            }
          }); 
        });
