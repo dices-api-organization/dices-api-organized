@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { useCases } from '../mongoDependencyInjection';
 import { UserSessionToken } from '../../domain/entities/UserSessionToken';
-import { useCasesMysql }  from '../sqlDependenyInjection';
+//import { useCasesMysql }  from '../sqlDependenyInjection';
 
 
 import  {finalUseCases}  from './injectionDecider';
