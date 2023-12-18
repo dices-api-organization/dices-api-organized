@@ -1,4 +1,4 @@
-let flag = 'mysql';
+let flag = 'mongodb';
 // Need flag
 
 import { UseCases } from "../../application/UseCases";
