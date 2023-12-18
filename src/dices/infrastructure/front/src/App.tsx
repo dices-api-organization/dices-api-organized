@@ -16,7 +16,7 @@ function App(): JSX.Element {
         <Route path='/' element={<SelectBD />} />
         <Route path='/login' element={<LoginForm />} />
         <Route path='/register' element={<RegisterForm />} />
-        <Route path='/play' element={<Play />} />
+        <Route path='/play'  element={<Play />} />
 
         </Routes>
     </>

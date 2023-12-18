@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { useCases } from '../mongoDependencyInjection';
+import  {finalUseCases}  from './injectionDecider';
 
 export const postUserLoginController = async (req: Request, res: Response) => {
   try{
   const { name, password } = req.body;
-  useCases
+  finalUseCases
     .postUserLogin({
       name: name,
       password: password

@@ -32,7 +32,7 @@ export const RegisterForm = () => {
     if (response.ok) {
       setSuccess(true)
       setTimeout(() => {
-       routeChange('play')
+       routeChange('../play')
       },1000)
     } else {
       setError(true)
