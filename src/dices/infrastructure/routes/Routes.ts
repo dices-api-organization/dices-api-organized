@@ -19,11 +19,11 @@ export const dicesRouter = Router();
 dicesRouter.post('/userLogin', postUserLoginController);
 dicesRouter.post('/userRegister', postUserRegisterController);
 dicesRouter.put('/update', putModifyPlayerNameController);
-dicesRouter.delete('/update', deleteAllGamesPlayerController);
+dicesRouter.delete('/update/delete', deleteAllGamesPlayerController);
 dicesRouter.post('/play', postPlayGameController);
-dicesRouter.get('/play', getAllGamesController);
-dicesRouter.get('/play', getPlayersAndRatingsController);
-dicesRouter.get('/play', getRatesListingController);
-dicesRouter.get('/play', getMinLoserController);
-dicesRouter.get('/play', getMaxWinnerController);
+dicesRouter.get('/play/games', getAllGamesController);
+dicesRouter.get('/play/players', getPlayersAndRatingsController);
+dicesRouter.get('/play/rates', getRatesListingController);
+dicesRouter.get('/play/min', getMinLoserController);
+dicesRouter.get('/play/max', getMaxWinnerController);
 

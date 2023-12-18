@@ -1,7 +1,7 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import  {finalUseCases}  from './injectionDecider';
 
-export const getRatesListingController = (res: Response) => {
+export const getRatesListingController = (req: Request, res: Response) => {
     
   finalUseCases
     .ratesListing()
