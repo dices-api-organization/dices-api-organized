@@ -1,3 +1,4 @@
+import { response } from "express";
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 
@@ -27,24 +28,28 @@ export const RegisterForm = () => {
     })
   })
   .then((response) => {
-    console.log(response);
-    
-    if (response.ok) {
+    if (!response){
+      setError(true)
+      throw new Error('Response was not ok')
+    }
+    return response.json()
+  })
+  .then((data) => {
+      console.log(data)
       setSuccess(true)
       setTimeout(() => {
        routeChange('../play')
       },1000)
-    } else {
-      setError(true)
-    }
   })
   .catch(function (error) {
     console.log("Fetch problems:" + error.message);
   })
-  setTimeout(() => {
-    setError(false)
-    setSuccess(false)
-  }, 3000)
+  .finally(() => {
+    setTimeout(() => {
+      setError(false)
+      setSuccess(false)
+    }, 3000)
+  })
 }
  return(
     <>
@@ -62,7 +67,7 @@ export const RegisterForm = () => {
          <div className="resultLogin">
             {error && <p>Change your name or password!</p>}
             {success && <p>Wellcome <span>{name}</span> !!! to the best dices game !</p>}
-           
+            
          </div>
     </>
  )

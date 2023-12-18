@@ -27,21 +27,27 @@ export const LoginForm = () => {
     })
   })
   .then((response) => {
-    if (response.ok) {
+    if (!response){
+      setError(true)
+      throw new Error('Response was not ok')
+    }
+    return response.json()
+  })
+  .then((data) => {
+      console.log(data)
       setSuccess(true)
       setTimeout(() => {
-        routeChange('../play')
+       routeChange('../play')
       },1000)
-    } else {
-      setError(true)
-    }
+  })
+  .catch(function (error) {
+    console.log("Fetch problems:" + error.message);
+  })
+  .finally(() => {
     setTimeout(() => {
       setError(false)
       setSuccess(false)
     }, 3000)
-  })
-  .catch(function (error) {
-    console.log("Fetch problems:" + error.message);
   })
 }
  return(

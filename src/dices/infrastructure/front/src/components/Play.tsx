@@ -3,7 +3,6 @@ import { useState } from "react"
 export const Play = () => {
     const [dice1, setDice1] = useState(0)
     const [dice2, setDice2] = useState(0)
-
     let allThrowsSession = [{}]
     let arrDice:number[] = []
     const handlePlay = () => {
@@ -22,10 +21,8 @@ export const Play = () => {
         setDice1(arrDice[0])
         setDice2(arrDice[1])
         allThrowsSession.push(newThrow)
-        //postNewDicesThrow(newThrow)
     }
-
-    /* const postNewDicesThrow = (newThrow:object) => {
+/* 
         fetch('http://localhost:3000/userRegister', {
             method: 'POST',
             mode: 'cors',
@@ -34,8 +31,8 @@ export const Play = () => {
               'auth': token
             },
             body: JSON.stringify(newThrow)
-          })
-    } */
+          } */
+    } 
     return(
         <>
             <h3>Dice 1: <span>{dice1} </span></h3>
