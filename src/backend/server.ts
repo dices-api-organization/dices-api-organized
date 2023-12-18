@@ -4,6 +4,7 @@ import express from 'express';
 
 import path = require('path');
 import '../dices/infrastructure/mongoDB/mongoConnectionDB';
+import { auth } from './middleware/auth';
 import '../dices/infrastructure/sql/mySqlConnectionDB';
 dotenv.config();
 

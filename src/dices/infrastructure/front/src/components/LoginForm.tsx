@@ -1,32 +1,44 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm = () => {
+  const navigate = useNavigate();
+  const routeChange = (path:string) =>{  
+    navigate(path);
+}
  const [name, setName] = useState<string>('')
  const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
+ const [success, setSuccess] = useState<boolean>(false)
 
 
  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
     e.preventDefault();
-    
-   fetch('http://localhost:3000/userLogin', {
+    fetch('http://localhost:3000/userLogin', {
     method: 'POST',
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      name: name,
+      name: name || 'Anonim',
       password: pass
     })
   })
-  .then(function (response) {
+  .then((response) => {
     if (response.ok) {
-      setError(false)
-
+      setSuccess(true)
+      setTimeout(() => {
+        routeChange('../play')
+      },1000)
     } else {
       setError(true)
     }
+    setTimeout(() => {
+      setError(false)
+      setSuccess(false)
+    }, 3000)
   })
   .catch(function (error) {
     console.log("Fetch problems:" + error.message);
@@ -39,7 +51,7 @@ export const LoginForm = () => {
         </div>
         <section>
              <form className="loginForm" onSubmit={handleSubmit}>
-                 <input type="text" className="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required autoFocus />
+                 <input type="text" className="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" autoFocus />
                  <input type="password" value={pass} onChange={e => setPass(e.target.value)} className="pass" required placeholder="Your password" />
                  
                  <button type="submit">Sign in</button>
@@ -48,12 +60,13 @@ export const LoginForm = () => {
          <div className="regLink">
              <p>
                  Haven't you an account?
-                 <a href="http://localhost:5173/Register" id="registerLink"> Register</a> please.
+                 <a href="http://localhost:5173/register" id="registerLink"> Register</a> please.
              </p>
          </div>
          <div className="resultLogin">
             {error && <p>Your name or password are wrong</p>}
-           
+            {success && <p>Hello again <span>{name}</span> !!! Let's play to dices game !</p>}
+
          </div>
     </>
  )

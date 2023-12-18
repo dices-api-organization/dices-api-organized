@@ -1,8 +1,9 @@
 import { Player } from '../entities/Player';
+import { UserSessionToken } from '../entities/UserSessionToken';
 
 export interface GameRepository {
-  postNewUser(newUser: Player): Promise<boolean>;
-  postUserLogin(newUser: Player): Promise<Player | null>;
+  postNewUser(newUser: Player): Promise<UserSessionToken | null>;
+  postUserLogin(newUser: Player): Promise<UserSessionToken | null>;
   findMaxWinner(): Promise<string | null>;
   findMinLoser(): Promise<string | null>;
   ratesListing(): Promise<string | null>;
