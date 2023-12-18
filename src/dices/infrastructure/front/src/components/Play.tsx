@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useParams } from "react-router-dom"
 
 export const Play = () => {
     const [dice1, setDice1] = useState(0)
@@ -11,7 +12,7 @@ export const Play = () => {
         while(i < 2){
             const rand = () => Math.floor((Math.random() * 6) + 1)
             arrDice[i] = rand()
-            console.log(i, arrDice[i])
+            console.log( arrDice[i])
             i++;
         }
         const newThrow = {
@@ -22,17 +23,15 @@ export const Play = () => {
         setDice2(arrDice[1])
         allThrowsSession.push(newThrow)
     }
-/* 
-        fetch('http://localhost:3000/userRegister', {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-              'Content-Type': 'application/json',
-              'auth': token
-            },
-            body: JSON.stringify(newThrow)
-          } */
-    } 
+    const savedToken = localStorage.getItem('token')
+    fetch('http://localhost:3000/play/postPlayGameController', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Authorization': `Bearer ${savedToken}`,
+            'Content-Type': 'application/json'
+        },
+    })
     return(
         <>
             <h3>Dice 1: <span>{dice1} </span></h3>

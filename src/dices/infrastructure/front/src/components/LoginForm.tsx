@@ -27,15 +27,16 @@ export const LoginForm = () => {
     })
   })
   .then((response) => {
-    if (!response){
+    if (!response.ok){
       setError(true)
       throw new Error('Response was not ok')
     }
     return response.json()
   })
   .then((data) => {
-      console.log(data)
+      console.log(data.token)
       setSuccess(true)
+      localStorage.setItem('token', data.token)
       setTimeout(() => {
        routeChange('../play')
       },1000)
