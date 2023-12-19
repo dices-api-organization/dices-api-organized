@@ -22,7 +22,16 @@ export class MongoGameRepository implements GameRepository {
 
     const isRegistered = await UserModel.find({ name: newUser.name });
 
-    const comparePasswords = await Promise.all(
+    if (newUser.name !== 'Anonim'){
+
+      let doesUserExist = isRegistered.find((element) => element.name == newUser.name);
+
+      if (doesUserExist){
+        return null;
+      }
+    }
+
+    const comparePasswords: boolean[] = await Promise.all(
       isRegistered.map(async (user: { password: string }) => {
         const isSamePass = compare(newUser.password, user.password);
         return isSamePass;
@@ -43,13 +52,13 @@ export class MongoGameRepository implements GameRepository {
       const token = jwt.sign({ id: createdUser._id.toString(), name: createdUser.name }, secret, {
         expiresIn: '2 days',
       })
+      
       console.log(token)
       return { id: createdUser.id, name: createdUser.name, token: token };
     }
   }
 
   async postUserLogin(newUser: Player): Promise<UserSessionToken | null> {
-    const hashPassword = await encrypt(newUser.password);
 
     const isNameRegistered = await UserModel.find({ name: newUser.name });
 

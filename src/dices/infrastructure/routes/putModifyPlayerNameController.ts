@@ -10,7 +10,7 @@ export const putModifyPlayerNameController = async (
   res: Response) => {
   
   finalUseCases
-  .modifyPlayerName(req.body, req.body.player_name)
+  .modifyPlayerName(req.body._id, req.body.name)
   .then((value: unknown) => {
     if (value) res.status(200).send(value);
     else res.status(404).send(value);
