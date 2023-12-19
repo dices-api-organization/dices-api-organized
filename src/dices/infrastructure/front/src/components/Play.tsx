@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useParams } from "react-router-dom"
 
 export const Play = () => {
     const [dice1, setDice1] = useState(0)
@@ -31,6 +30,12 @@ export const Play = () => {
             'Authorization': `Bearer ${savedToken}`,
             'Content-Type': 'application/json'
         },
+        body: JSON.stringify({
+            id:id,
+            name:name;
+            dice1: arrDice[0],
+            dice2: arrDice[1]
+          })
     })
     return(
         <>
