@@ -1,6 +1,6 @@
-import { response } from "express";
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { HeaderUser } from "./HeaderUser";
 
 
 export const RegisterForm = () => {
@@ -12,11 +12,11 @@ export const RegisterForm = () => {
  const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
  const [success, setSuccess] = useState<boolean>(false)
-
+const[id, setId] = useState('')
 
  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-   fetch('http://localhost:3000/userRegister', {
+   const newUser = fetch('http://localhost:3000/userRegister', {
     method: 'POST',
     mode: 'cors',
     headers: {
@@ -35,7 +35,8 @@ export const RegisterForm = () => {
     return response.json()
   })
   .then((data) => {
-      console.log(data.token)
+      setId(data.id)
+      setName(data.name)
       setSuccess(true)
       localStorage.setItem('token', data.token)
       setTimeout(() => {
@@ -54,6 +55,7 @@ export const RegisterForm = () => {
 }
  return(
     <>
+        <HeaderUser name={name} id={id}/>
         <div className="subHeader">
             <h3>Register</h3>
         </div>

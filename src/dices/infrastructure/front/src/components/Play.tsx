@@ -1,7 +1,8 @@
 import { useState } from "react"
-import { useParams } from "react-router-dom"
+import { HeaderUser } from "./HeaderUser"
 
 export const Play = () => {
+   
     const [dice1, setDice1] = useState(0)
     const [dice2, setDice2] = useState(0)
     let allThrowsSession = [{}]
@@ -31,6 +32,11 @@ export const Play = () => {
             'Authorization': `Bearer ${savedToken}`,
             'Content-Type': 'application/json'
         },
+        body: JSON.stringify({
+          
+            dice1: arrDice[0],
+            dice2: arrDice[1]
+        })
     })
     return(
         <>
