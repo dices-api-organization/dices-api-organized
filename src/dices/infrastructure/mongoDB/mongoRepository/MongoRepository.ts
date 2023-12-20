@@ -31,12 +31,16 @@ export class MongoGameRepository implements GameRepository {
       }
     }
 
+    const allUsers = await UserModel.find({ });
+
     const comparePasswords: boolean[] = await Promise.all(
-      isRegistered.map(async (user: { password: string }) => {
+      allUsers.map(async (user: { password: string }) => {
         const isSamePass = compare(newUser.password, user.password);
         return isSamePass;
       })
     );
+
+    console.log('HELLO PASSSSS!!!!!!!!!!!!',comparePasswords)
 
     if (comparePasswords.some(match => match)) {
       console.log('Login please!! There is a user with your credentials');
@@ -140,7 +144,7 @@ export class MongoGameRepository implements GameRepository {
 
     let totalAverage = totalSum / allSuccessRates.length;
 
-    listingText += `\nAnd finally, the total average for all players is: ${totalAverage}`;
+    listingText += `\nAnd finally, the total average for all players is: ${totalAverage?.toFixed(2)}`;
 
 
     return listingText;
@@ -220,7 +224,7 @@ export class MongoGameRepository implements GameRepository {
       }
 
       // Finding AVG success
-    let playerSuccessRate = (numOfWins / updateNumOfGames)*100;
+    let playerSuccessRate = ((numOfWins / updateNumOfGames)*100)?.toFixed(2);
 
       const addNewGame = await UserModel.findOneAndUpdate({_id: playerId}, {$push:{games: {dice_1: dice1Random, dice_2: dice2Random, winOrLose: resultOfGame}}});
 
