@@ -1,15 +1,16 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 
-export const LoginForm = () => {
+export const LoginForm = ({ setUserId }: { setUserId: React.Dispatch<React.SetStateAction<string>> }) => {
   const navigate = useNavigate();
-  const routeChange = (path:string) =>{  
+  const routeChange = (path:string, id:string) =>{  
     navigate(path);
 }
  const [name, setName] = useState<string>('')
  const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
  const [success, setSuccess] = useState<boolean>(false)
+ const[id, setId] = useState('')
 
 
  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,11 +35,12 @@ export const LoginForm = () => {
     return response.json()
   })
   .then((data) => {
-      console.log(data.token)
+    setId(data.id)
+    setUserId(data.id)
       setSuccess(true)
       localStorage.setItem('token', data.token)
       setTimeout(() => {
-       routeChange('../play')
+       routeChange('../play', id)
       },1000)
   })
   .catch(function (error) {

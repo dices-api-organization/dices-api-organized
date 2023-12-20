@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { HeaderUser } from "./HeaderUser";
 
 
-export const RegisterForm = () => {
+export const RegisterForm = ({ setUserId }: { setUserId: React.Dispatch<React.SetStateAction<string>> }) => {
   const navigate = useNavigate();
-  const routeChange = (path:string) =>{  
+  const routeChange = (path:string, id:string) =>{  
     navigate(path);
 }
  const [name, setName] = useState<string>('')
@@ -36,11 +36,12 @@ const[id, setId] = useState('')
   })
   .then((data) => {
       setId(data.id)
+      setUserId(data.id)
       setName(data.name)
       setSuccess(true)
       localStorage.setItem('token', data.token)
       setTimeout(() => {
-       routeChange('../play')
+       routeChange('../play', id)
       },1000)
   })
   .catch(function (error) {
@@ -55,7 +56,6 @@ const[id, setId] = useState('')
 }
  return(
     <>
-        <HeaderUser name={name} id={id}/>
         <div className="subHeader">
             <h3>Register</h3>
         </div>

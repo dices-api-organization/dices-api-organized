@@ -1,9 +1,7 @@
 import { useState } from "react"
 
-import { HeaderUser } from "./HeaderUser"
 
-
-export const Play = () => {
+export const Play = ({ id }: { id: string }) => {
    
     const [dice1, setDice1] = useState(0)
     const [dice2, setDice2] = useState(0)
@@ -36,13 +34,13 @@ export const Play = () => {
         },
         body: JSON.stringify({
             id:id,
-            name:name;
             dice1: arrDice[0],
             dice2: arrDice[1]
           })
     })
     return(
         <>
+        {id}
             <h3>Dice 1: <span>{dice1} </span></h3>
             <h3>Dice 2: <span>{dice2}</span></h3>
             {dice1 + dice2 == 7 && <h1><span>Winner</span></h1>}
