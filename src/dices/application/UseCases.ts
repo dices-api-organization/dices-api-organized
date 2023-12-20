@@ -1,6 +1,7 @@
 import { Player } from '../domain/entities/Player';
 import { GameRepository } from '../domain/repositories/GameRepository';
 import { UserSessionToken } from '../domain/entities/UserSessionToken';
+import { Game } from '../domain/entities/Game';
 
 export class UseCases {
   constructor(private readonly gameRepository: GameRepository) {}
@@ -45,7 +46,7 @@ export class UseCases {
 
   }
 
-  async playGame(playerId: number): Promise<boolean>{
+  async playGame(playerId: number): Promise<Game | null>{
     const play = await this.gameRepository.playGame(playerId);
     return play;
 

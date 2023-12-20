@@ -13,6 +13,7 @@ const secret = process.env.SECRET_KEY ?? 'sin secretos';
 import { userSchemaInterface } from '../mongoModel/UserSchema';
 
 import { Aggregate } from 'mongoose';
+import { Game } from '../../../domain/entities/Game';
 
 
 export class MongoGameRepository implements GameRepository {
@@ -60,6 +61,7 @@ export class MongoGameRepository implements GameRepository {
         const token = jwt.sign({ id: isUserRegistered.id, name: isUserRegistered.name }, secret, {
           expiresIn: '2 days',
         })
+        console.log(token)
         return { id: isUserRegistered.id, name: isUserRegistered.name, token: token }
       } else {
         console.log('User not found');
@@ -168,7 +170,7 @@ export class MongoGameRepository implements GameRepository {
 
   }
 
-  async playGame(playerId: number): Promise<boolean>{
+  async playGame(playerId: number): Promise<Game | null>{
 
 
     //Obtain our current player for future use
@@ -177,7 +179,7 @@ export class MongoGameRepository implements GameRepository {
 
     if (!currentPlayer) {
       // Game could not be played, false!
-      return false;
+      return null;
     }
 
     // How many games have they played
@@ -196,8 +198,8 @@ export class MongoGameRepository implements GameRepository {
     const modifyNumOfGames: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{num_of_games: updateNumOfGames}});
 
     // Finally, play our game
-      let dice1Random = Math.floor(Math.random() * 7);
-      let dice2Random = Math.floor(Math.random() * 7);
+      let dice1Random = Math.floor(Math.random() * 6)+1;
+      let dice2Random = Math.floor(Math.random() * 6)+1;
 
       let resultOfGame = false;
 
@@ -214,11 +216,9 @@ export class MongoGameRepository implements GameRepository {
     let playerSuccessRate = (numOfWins / updateNumOfGames)*100;
 
       const addNewGame = await UserModel.findOneAndUpdate({_id: playerId}, {$push:{games: {dice_1: dice1Random, dice_2: dice2Random, winOrLose: resultOfGame}}});
-
       const modifyRateOfSuccess: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{success_rate: playerSuccessRate}});
-
       // Game could be played, so true!
-    return true;
+    return {diceThrow1:dice1Random, diceThrow2:dice2Random}
 
   }
 

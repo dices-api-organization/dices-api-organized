@@ -1,46 +1,49 @@
 import { useState } from "react"
 
-
 export const Play = ({ id }: { id: string }) => {
    
     const [dice1, setDice1] = useState(0)
     const [dice2, setDice2] = useState(0)
-    let allThrowsSession = [{}]
-    let arrDice:number[] = []
-    const handlePlay = () => {
-        let i = 0;
-      
-        while(i < 2){
-            const rand = () => Math.floor((Math.random() * 6) + 1)
-            arrDice[i] = rand()
-            console.log( arrDice[i])
-            i++;
-        }
-        const newThrow = {
-            dice1: arrDice[0],
-            dice2: arrDice[1]
-        }
-        setDice1(arrDice[0])
-        setDice2(arrDice[1])
-        allThrowsSession.push(newThrow)
+    const [err, setErr] = useState('')
+    const handlePlay = async () => {
+            setErr('')
+        const savedToken = localStorage.getItem('token')
+        fetch('http://localhost:3000/play/throw', 
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Authorization': `Bearer ${savedToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id:id,
+                    
+                })
+            })
+            .then((response) => {
+                if (!response.ok){
+                  setErr('Response throw dices was not ok')
+                  throw new Error('Response throw dices was not ok')
+                }
+                return response.json()
+              })
+              .then((data) => {
+                console.log(data.ok)
+                setDice1(data.diceThrow1)
+                setDice2(data.diceThrow2)
+              })
+              .catch(function (error) {
+                setErr("Fetch problems:" + error.message)
+                console.log("Fetch problems: " + error.message);
+              })
+             
+                
+                  
     }
-    const savedToken = localStorage.getItem('token')
-    fetch('http://localhost:3000/play/postPlayGameController', {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            'Authorization': `Bearer ${savedToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            id:id,
-            dice1: arrDice[0],
-            dice2: arrDice[1]
-          })
-    })
     return(
         <>
-        {id}
+            {id}
             <h3>Dice 1: <span>{dice1} </span></h3>
             <h3>Dice 2: <span>{dice2}</span></h3>
             {dice1 + dice2 == 7 && <h1><span>Winner</span></h1>}
@@ -54,6 +57,7 @@ export const Play = ({ id }: { id: string }) => {
                 <button>Loosers ranking</button>
                 <button>Get the best average player</button>
             </nav>
+            {err}
         </>
     )
 }

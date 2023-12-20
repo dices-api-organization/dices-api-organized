@@ -15,7 +15,7 @@ app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use('/', dicesRouter);
-app.use('/play', auth, dicesRouter)
+//app.use('/play', auth, dicesRouter)
 
 return app
 }

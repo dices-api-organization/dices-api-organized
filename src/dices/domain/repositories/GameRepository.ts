@@ -1,3 +1,4 @@
+import { Game } from '../entities/Game';
 import { Player } from '../entities/Player';
 import { UserSessionToken } from '../entities/UserSessionToken';
 
@@ -9,7 +10,7 @@ export interface GameRepository {
   ratesListing(): Promise<string | null>;
   allPlayersAndRatings(): Promise<string | null>;
   modifyPlayerName(newUser: Player, newName: string): Promise<boolean>;
-  playGame(playerId: number): Promise<boolean>;
+  playGame(playerId: number): Promise<Game | null>;
   deleteAllGamesFromPlayer(playerId: number): Promise<boolean>;
   listAllGamesFromPlayer(playerId: number): Promise<string | null>;
 

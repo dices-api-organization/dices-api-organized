@@ -8,9 +8,9 @@ import  {finalUseCases}  from './injectionDecider';
 export const postPlayGameController = async (
   req: Request,
   res: Response) => {
-  
-  finalUseCases
-  .playGame(req.body._id)
+    const {id} = req.body
+  /* const dicesThrow = await  */
+  finalUseCases.playGame(id)
   .then((value: unknown) => {
     if (value) res.status(200).send(value);
     else res.status(404).send(value);
@@ -18,4 +18,12 @@ export const postPlayGameController = async (
   .catch((error) => {
     console.log(error);
   });
+
+ /*  console.log('en controller  '+ dicesThrow)
+
+    if (dicesThrow) 
+      res.status(200).send(dicesThrow);
+    else 
+      res.status(404).send(null); */
+  
 };

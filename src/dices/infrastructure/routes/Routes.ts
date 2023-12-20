@@ -20,7 +20,7 @@ dicesRouter.post('/userLogin', postUserLoginController);
 dicesRouter.post('/userRegister', postUserRegisterController);
 dicesRouter.put('/update', putModifyPlayerNameController);
 dicesRouter.delete('/update', deleteAllGamesPlayerController);
-dicesRouter.post('/play', postPlayGameController);
+dicesRouter.post('/play/throw', postPlayGameController);
 dicesRouter.get('/play', getAllGamesController);
 dicesRouter.get('/play', getPlayersAndRatingsController);
 dicesRouter.get('/play', getRatesListingController);
