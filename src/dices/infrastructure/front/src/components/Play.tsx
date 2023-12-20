@@ -1,5 +1,7 @@
 import { useState } from "react"
+
 import { HeaderUser } from "./HeaderUser"
+
 
 export const Play = () => {
    
@@ -33,10 +35,11 @@ export const Play = () => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          
+            id:id,
+            name:name;
             dice1: arrDice[0],
             dice2: arrDice[1]
-        })
+          })
     })
     return(
         <>
