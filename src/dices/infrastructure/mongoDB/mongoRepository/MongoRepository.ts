@@ -256,16 +256,15 @@ export class MongoGameRepository implements GameRepository {
   }
 
   async deleteAllGamesFromPlayer(playerId: number): Promise<boolean> {
-    const deleteAllGames = await UserModel.findOneAndUpdate(
-      { _id: playerId },
-      { $set: { games: [] } },
-      function (err: Error) {
-        if (err) {
-          return false;
-        }
-      }
-    );
+    console.log(playerId)
+    const deleteAllGames = await UserModel.deleteOne(
+      { _id: playerId })
+      console.log(playerId)
 
+    if (!deleteAllGames){
+      return false
+    }
+/* 
     const modifyNumOfGames: userSchemaInterface | null =
       await UserModel.findOneAndUpdate(
         { _id: playerId },
@@ -283,7 +282,7 @@ export class MongoGameRepository implements GameRepository {
         { _id: playerId },
         { $set: { success_rate: 0 } }
       );
-
+ */
     return true;
   }
 
