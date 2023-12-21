@@ -2,7 +2,7 @@
   "name": "plantilla",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/backend/server.ts",
   "scripts": {
     "test": "npx jest --detectOpenHandles",
     "prettier-format": "npx prettier --config .prettierrc 'src/**/*.ts' --write",
