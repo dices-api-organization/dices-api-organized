@@ -21,19 +21,8 @@ export class MongoGameRepository implements GameRepository {
 
     const isRegistered = await UserModel.find({ name: newUser.name });
 
-    if (newUser.name !== 'Anonim'){
-
-      let doesUserExist = isRegistered.find((element) => element.name == newUser.name);
-
-      if (doesUserExist){
-        return null;
-      }
-    }
-
-    const allUsers = await UserModel.find({ });
-
-    const comparePasswords: boolean[] = await Promise.all(
-      allUsers.map(async (user: { password: string }) => {
+    const comparePasswords = await Promise.all(
+      isRegistered.map(async (user: { password: string }) => {
         const isSamePass = compare(newUser.password, user.password);
         return isSamePass;
       })
@@ -50,11 +39,14 @@ export class MongoGameRepository implements GameRepository {
 
       const createdUser = await UserModel.create(newUserRegistered);
       console.log('User created with ID:', createdUser._id);
-      const token = jwt.sign({ id: createdUser._id.toString(), name: createdUser.name }, secret, {
-        expiresIn: '2 days',
-      })
-      
-      console.log(token)
+      const token = jwt.sign(
+        { id: createdUser._id.toString(), name: createdUser.name },
+        secret,
+        {
+          expiresIn: '2 days'
+        }
+      );
+      console.log(token);
       return { id: createdUser.id, name: createdUser.name, token: token };
     }
   }
@@ -116,45 +108,46 @@ export class MongoGameRepository implements GameRepository {
     return `Player ${minLoser.name} is the lowest loser, with a score of ${minLoser.success_rate}`;
   }
 
-  async ratesListing(): Promise<string | null>{
-    const ratesList: Array<userSchemaInterface> | null = await UserModel.find().sort({success_rate:-1})
+  async ratesListing(): Promise<string | null> {
+    const ratesList: Array<userSchemaInterface> | null = await UserModel.find()
+      .sort({ success_rate: -1 })
+      .limit(1);
 
     if (!ratesList) {
       return null;
     }
 
     let listingText = '';
-    ratesList.forEach((element)=>{
-      listingText += `${element.toJSON().name} has a success rate of ${element.toJSON().success_rate}\n`;
-    })
+    ratesList.forEach((element) => {
+      listingText += `${element.toJSON().player_name} has a success rate of ${
+        element.toJSON().success_rate
+      }\n`;
+    });
 
     // Now find total average of all players
 
     const allPlayers: Array<userSchemaInterface> | null =
       await UserModel.find();
 
-    let allSuccessRates: Array<number> = [];
+    const allSuccessRates: Array<number | undefined> = [];
 
-    allPlayers.forEach((element)=>{
-      if (typeof element.success_rate === 'number'){
-        
+    allPlayers.forEach((element) => {
+      if (typeof allSuccessRates !== 'undefined') {
         allSuccessRates.push(element.success_rate);
       }
     });
 
     let totalSum: number = 0;
 
-    for (let i=0;i<allSuccessRates.length;i++){
-
-      if (typeof allSuccessRates[i] === 'number'){
-
+    for (let i = 0; i < allSuccessRates.length; i++) {
+      if (typeof allSuccessRates === 'number') {
         totalSum += allSuccessRates[i];
       }
     }
 
     const totalAverage = totalSum / allSuccessRates.length;
 
-    listingText += `\nAnd finally, the total average for all players is: ${totalAverage?.toFixed(2)}`;
+    listingText += `\nAnd finally, the total average for all players is: ${totalAverage}`;
 
     return listingText;
   }
@@ -168,9 +161,11 @@ export class MongoGameRepository implements GameRepository {
     }
 
     let playersList = '';
-    allPlayers.forEach((element)=>{
-      playersList += `${element.toJSON().name} has a success rate of ${element.toJSON().success_rate}\n`;
-    })
+    allPlayers.forEach((element) => {
+      playersList += `${element.toJSON().player_name} has a success rate of ${
+        element.toJSON().success_rate
+      }\n`;
+    });
     return playersList;
 
   }
@@ -250,7 +245,6 @@ export class MongoGameRepository implements GameRepository {
           }
         }
       }
-
     );
     const modifyRateOfSuccess: userSchemaInterface | null =
       await UserModel.findOneAndUpdate(
@@ -259,7 +253,6 @@ export class MongoGameRepository implements GameRepository {
       );
     // Game could be played, so true!
     return { diceThrow1: dice1Random, diceThrow2: dice2Random };
-
   }
 
   async deleteAllGamesFromPlayer(playerId: number): Promise<boolean> {
@@ -271,7 +264,25 @@ export class MongoGameRepository implements GameRepository {
     if (!deleteAllGames){
       return false
     }
+/* 
+    const modifyNumOfGames: userSchemaInterface | null =
+      await UserModel.findOneAndUpdate(
+        { _id: playerId },
+        { $set: { num_of_games: 0 } }
+      );
 
+    const modifyNumOfWins: userSchemaInterface | null =
+      await UserModel.findOneAndUpdate(
+        { _id: playerId },
+        { $set: { num_of_wins: 0 } }
+      );
+
+    const modifyRateOfSuccess: userSchemaInterface | null =
+      await UserModel.findOneAndUpdate(
+        { _id: playerId },
+        { $set: { success_rate: 0 } }
+      );
+ */
     return true;
   }
 
