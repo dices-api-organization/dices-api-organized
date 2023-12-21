@@ -2,7 +2,7 @@
   "name": "sprint6_dices_api",
   "version": "1.0.0",
   "description": "El sprint 6 de Dices API",
-  "main": "index.js",
+  "main": "./src/backend/server.ts",
   "scripts": {
     "test": "npx jest --detectOpenHandles",
     "prettier-format": "npx prettier --config .prettierrc 'src/**/*.ts' --write",
