@@ -22,12 +22,25 @@ export class MongoGameRepository implements GameRepository {
 
     const isRegistered = await UserModel.find({ name: newUser.name });
 
-    const comparePasswords = await Promise.all(
-      isRegistered.map(async (user: { password: string }) => {
+    if (newUser.name !== 'Anonim'){
+
+      let doesUserExist = isRegistered.find((element) => element.name == newUser.name);
+
+      if (doesUserExist){
+        return null;
+      }
+    }
+
+    const allUsers = await UserModel.find({ });
+
+    const comparePasswords: boolean[] = await Promise.all(
+      allUsers.map(async (user: { password: string }) => {
         const isSamePass = compare(newUser.password, user.password);
         return isSamePass;
       })
     );
+
+    console.log('HELLO PASSSSS!!!!!!!!!!!!',comparePasswords)
 
     if (comparePasswords.some(match => match)) {
       console.log('Login please!! There is a user with your credentials');
@@ -43,13 +56,13 @@ export class MongoGameRepository implements GameRepository {
       const token = jwt.sign({ id: createdUser._id.toString(), name: createdUser.name }, secret, {
         expiresIn: '2 days',
       })
+      
       console.log(token)
       return { id: createdUser.id, name: createdUser.name, token: token };
     }
   }
 
   async postUserLogin(newUser: Player): Promise<UserSessionToken | null> {
-    const hashPassword = await encrypt(newUser.password);
 
     const isNameRegistered = await UserModel.find({ name: newUser.name });
 
@@ -131,7 +144,7 @@ export class MongoGameRepository implements GameRepository {
 
     let totalAverage = totalSum / allSuccessRates.length;
 
-    listingText += `\nAnd finally, the total average for all players is: ${totalAverage}`;
+    listingText += `\nAnd finally, the total average for all players is: ${totalAverage?.toFixed(2)}`;
 
 
     return listingText;
@@ -211,7 +224,7 @@ export class MongoGameRepository implements GameRepository {
       }
 
       // Finding AVG success
-    let playerSuccessRate = (numOfWins / updateNumOfGames)*100;
+    let playerSuccessRate = ((numOfWins / updateNumOfGames)*100)?.toFixed(2);
 
       const addNewGame = await UserModel.findOneAndUpdate({_id: playerId}, {$push:{games: {dice_1: dice1Random, dice_2: dice2Random, winOrLose: resultOfGame}}});
 

@@ -1,3 +1,4 @@
+import { compare, encrypt } from '../../../../backend/middleware/encrypt';
 import { Player } from '../../../domain/entities/Player';
 import { GameRepository } from '../../../domain/repositories/GameRepository';
 import { mySqlGame } from '../sqlModel/MySqlGameModel';
@@ -6,6 +7,7 @@ import { sequelizeConnection } from '../mySqlConnectionDB';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { UserSessionToken } from '../../../domain/entities/UserSessionToken';
+import { Model } from 'sequelize';
 
 dotenv.config()
 
@@ -15,39 +17,112 @@ export class mySqlGameRepository implements GameRepository {
     async postNewUser(newUser: Player): Promise<UserSessionToken | null> {
 
      
+      const hashPassword = await encrypt(newUser.password);
 
+      // If user is not anonymous, we must assure they don't have the same name as another user in the db
 
-      const isRegistered = await mySqlPlayer.sync().then(()=>{
-        return mySqlPlayer.findOne({
+      const alreadyExists = await mySqlPlayer.sync().then(()=>{
+        return mySqlPlayer.findAll({
             where: {
                 player_name: newUser.name
               }
        }); 
       });
-      if (isRegistered) {
-        console.log('false');
-        return null;
-      }
-      console.log('true');
-      let resultadoFinal = await mySqlPlayer.sync({alter:true}).then(()=>{
-
-        const newPlayer = mySqlPlayer.build({ player_name: newUser.name, player_password: newUser.password});
-
-        return newPlayer.save();
 
       
-        })
-        .then((data)=>{
-          const token = jwt.sign({ id: data.toJSON().id.toString(), name: data.toJSON().player_name }, secret, {
-            expiresIn: '2 days',
-          })
 
-          return { id: data.toJSON().id, name: data.toJSON().player_name, token: token };
+      if (newUser.name !== 'Anonim'){
 
-        })
-        .catch((err)=>{
+        let doesUserExist = alreadyExists.find((element) => element.toJSON().player_name == newUser.name);
+        
+
+        if (doesUserExist) {
           return null;
-        })
+        }
+
+      }
+
+      // From now on, the user is NOT duplicate, and is either a new name OR anonim. So from now on, any operations can be done.
+      
+
+      // Find all players with our submitted name, just in case they are anonymous and have multiple entries in the db
+
+      
+
+      let comparePasswords: boolean[] = [];
+
+      const allUsers = await mySqlPlayer.sync().then(()=>{
+        return mySqlPlayer.findAll({ }) });
+
+        for(let i=0;i<allUsers.length;i++){
+          
+          const isSamePass = compare(newUser.password, allUsers[i].toJSON().player_password);
+
+          comparePasswords.push(isSamePass);
+
+          console.log('LAS  COMPARACIONES!!!!!!!!!!!!!!',isSamePass)
+          
+        }
+
+        console.log('LAS PASSWORDS!!!!!!!!!!!!!!',comparePasswords)
+        
+
+        
+      // it doesn't compare the passwords. you're able to put wrong passwords in CHECK THIS PLEASE
+
+      
+        if (comparePasswords.some(match => match)) {
+          console.log('Login please!! There is a user with your credentials');
+          return null;
+        }
+
+      
+
+      
+        let resultadoFinal: UserSessionToken | null;
+        
+      if (newUser.name === 'Anonim'){
+        resultadoFinal = await mySqlPlayer.sync({alter:true}).then(()=>{
+
+          const newPlayer = mySqlPlayer.build({ player_name: null, player_password: hashPassword});
+  
+          return newPlayer.save();
+  
+        
+          })
+          .then((data)=>{
+            const token = jwt.sign({ id: data.toJSON().id.toString(), name: data.toJSON().player_name }, secret, {
+              expiresIn: '2 days',
+            })
+  
+            return { id: data.toJSON().id, name: data.toJSON().player_name, token: token };
+  
+          })
+          .catch((err)=>{
+            return null;
+          })
+      }else{
+        resultadoFinal = await mySqlPlayer.sync({alter:true}).then(()=>{
+
+          const newPlayer = mySqlPlayer.build({ player_name: newUser.name, player_password: hashPassword});
+  
+          return newPlayer.save();
+  
+        
+          })
+          .then((data)=>{
+            const token = jwt.sign({ id: data.toJSON().id.toString(), name: data.toJSON().player_name }, secret, {
+              expiresIn: '2 days',
+            })
+  
+            return { id: data.toJSON().id, name: data.toJSON().player_name, token: token };
+  
+          })
+          .catch((err)=>{
+            return null;
+          })
+      }
+      
 
         return resultadoFinal;
         
@@ -56,41 +131,55 @@ export class mySqlGameRepository implements GameRepository {
     }
   
     async postUserLogin(newUser: Player): Promise<UserSessionToken | null> {
-      const isNameRegistered = await mySqlPlayer.sync().then(()=>{
-        return mySqlPlayer.findOne({
+
+      let isNameRegistered = await mySqlPlayer.sync().then(()=>{
+          return mySqlPlayer.findAll({
+              where: {
+                  player_name: newUser.name
+                }
+         }); 
+        });
+
+      if (isNameRegistered && newUser.name === 'Anonim') {
+         let allAnonimUsers = await mySqlPlayer.sync().then(()=>{
+        return mySqlPlayer.findAll({
             where: {
-                player_name: newUser.name
+                player_name: null
               }
        }); 
       });
-      const isPassRegistered = await mySqlPlayer.sync().then(()=>{
-        return mySqlPlayer.findOne({
-            where: {
-                player_password: newUser.password
-              }
-       }); 
-      });
-      if (isPassRegistered && isNameRegistered) {
 
-        const token = jwt.sign({ id: isNameRegistered.toJSON().id, name: isNameRegistered.toJSON().name }, secret, {
-          expiresIn: '2 days',
-        })
+        const isUserRegistered = allAnonimUsers.find(objeto => compare(newUser.password, objeto.toJSON().player_password))
+        if (isUserRegistered) {
+          const token = jwt.sign({ id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().player_name }, secret, {
+            expiresIn: '2 days',
+          })
+          return { id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().player_name, token: token }
+        } else {
+          console.log('User not found1');
+          return null;
+        }  
 
-        console.log('success');
-        return { id: isNameRegistered.toJSON().id, name: isNameRegistered.toJSON().name, token: token };
-      } else {
-        console.log('try  again');
+     } else if (isNameRegistered){
+      const isUserRegistered = isNameRegistered.find(objeto => compare(newUser.password, objeto.toJSON().player_password))
+
+        if (isUserRegistered) {
+          const token = jwt.sign({ id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().player_name }, secret, {
+            expiresIn: '2 days',
+          })
+          return { id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().player_name, token: token }
+        } else {
+          console.log('User not found2');
+          return null;
+        }  
+
+
+     } else {
+        console.log('User not found3');
         return null;
       }
     }
 
-
-
-
-
-
-
- // De momento, todo al mismo tiempo que el login
 
     async findMaxWinner(): Promise<string | null> {
         const maxWinnerFunc = await mySqlPlayer.sync().then(()=>{
@@ -105,11 +194,16 @@ export class mySqlGameRepository implements GameRepository {
               ]
             }); 
           }).then((data)=>{
-            return `The highest winner is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
+            if (data?.toJSON().player_name === null){
+              return `The highest winner is Anonim with a score of ${data?.toJSON().success_rate}`;
+            }else{
+              return `The highest winner is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
+            }
+           
            }) 
         
         if (maxWinnerFunc) {
-          console.log(`success, ${maxWinnerFunc}`);
+          console.log(`${maxWinnerFunc}`);
           return maxWinnerFunc;
         } else {
           console.log('try  again');
@@ -130,11 +224,15 @@ export class mySqlGameRepository implements GameRepository {
               ]
             }); 
           }).then((data)=>{
-            return `The lowest loser is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
+            if (data?.toJSON().player_name === null){
+              return `The lowest loser is Anonim with a score of ${data?.toJSON().success_rate}`;
+            }else{
+              return `The lowest loser is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
+            }
            }) 
         
         if (minLoserFunc) {
-          console.log(`success, ${minLoserFunc}`);
+          console.log(`${minLoserFunc}`);
           return minLoserFunc;
         } else {
           console.log('try  again');
@@ -155,9 +253,15 @@ export class mySqlGameRepository implements GameRepository {
               ]
             }); 
           }).then((data)=>{
+            
             let listingText = '';
             data.forEach((element)=>{
-              listingText += `${element.toJSON().player_name} has a success rate of ${element.toJSON().success_rate}\n`;
+              if (element.toJSON().player_name === null){
+                listingText += `Anonim has a success rate of ${element.toJSON().success_rate}\n`;
+              }else{
+                listingText += `${element.toJSON().player_name} has a success rate of ${element.toJSON().success_rate}\n`;
+              }
+              
             })
             return listingText;
           });
@@ -170,28 +274,20 @@ export class mySqlGameRepository implements GameRepository {
       }).then((data)=>{
         let totalAvgText = '';
         data.forEach((element)=>{
-            totalAvgText += `The total average of all players is: ${element.toJSON().total_avg}`;
+            totalAvgText += `The total average of all players is: ${Math.trunc(element.toJSON().total_avg)}`;
         })
         return totalAvgText;
       });
         
         if (ratesListFunc && totalAvg) {
-            let finalText = `success, ${ratesListFunc}, ${totalAvg}`;
-          console.log(`success, ${ratesListFunc}, ${totalAvg}`);
+            let finalText = `${ratesListFunc}${totalAvg}`;
+          console.log(`${ratesListFunc}, ${totalAvg}`);
           return finalText;
         } else {
-          console.log('try  again');
+          
           return null;
         }
       }
-
-
-
-
-
-
-
-
 
 
 
@@ -205,8 +301,14 @@ export class mySqlGameRepository implements GameRepository {
         }).then((data)=>{
           let finalText = '';
           data.forEach((element)=>{
-            finalText += `Player name: ${element.toJSON().player_name}\n
+            if (element.toJSON().player_name === null){
+              finalText += `Player name: Anonim\n
+              Success rate: ${element.toJSON().success_rate}\n`
+            }else{
+              finalText += `Player name: ${element.toJSON().player_name}\n
             Success rate: ${element.toJSON().success_rate}\n`
+            }
+            
           })
           return finalText
         }) 
@@ -230,7 +332,7 @@ export class mySqlGameRepository implements GameRepository {
         const isRegistered = await mySqlPlayer.sync().then(()=>{
           return mySqlPlayer.findOne({
               where: {
-                  _id: playerId
+                id: playerId
                 }
          }); 
         });
@@ -242,10 +344,11 @@ export class mySqlGameRepository implements GameRepository {
         await mySqlPlayer.sync({alter:true}).then(()=>{
           mySqlPlayer.update({ player_name: newName }, {
            where: {
-            _id: playerId
+            id: playerId
            }
          }); 
        });
+       
         return true;
       }
 
@@ -325,13 +428,15 @@ export class mySqlGameRepository implements GameRepository {
                 })
               })
               let playerTotalGames = totalLosses+totalWins;
-              let playerSuccessRate = (totalWins / playerTotalGames)*100;
+              let playerSuccessRate = Math.trunc((totalWins / playerTotalGames)*100);
+
+              
 
          
-          await mySqlGame.sync({alter:true}).then(()=>{
-            return mySqlGame.update({ success_rate: playerSuccessRate }, {
+          await mySqlPlayer.sync({alter:true}).then(()=>{
+            return mySqlPlayer.update({ success_rate: playerSuccessRate }, {
               where: {
-                player_id: playerId
+                id: playerId
               }
             });
              
