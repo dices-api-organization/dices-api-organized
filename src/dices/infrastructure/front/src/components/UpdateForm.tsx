@@ -1,30 +1,28 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 
-export const LoginForm = ({ setUserId }: { setUserId: React.Dispatch<React.SetStateAction<string>> }) => {
+export const UpdateForm = ({ userId }: { userId: string }) => {
   const navigate = useNavigate();
   const routeChange = (path:string, id:string) =>{  
     navigate(path);
 }
  const [name, setName] = useState<string>('')
- const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
  const [success, setSuccess] = useState<boolean>(false)
- const[id, setId] = useState('')
-
-
- const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-
+ const[id, setId] = useState(userId)
+ const savedToken = localStorage.getItem('token')
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    fetch('http://localhost:3000/userLogin', {
-    method: 'POST',
+    fetch('http://localhost:3000/play/update', {
+    method: 'PUT',
     mode: 'cors',
     headers: {
+        'Authorization': `Bearer ${savedToken}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      name: name || 'Anonim',
-      password: pass
+        id:id,
+      name: name || 'Anonim'
     })
   })
   .then((response) => {
@@ -35,13 +33,12 @@ export const LoginForm = ({ setUserId }: { setUserId: React.Dispatch<React.SetSt
     return response.json()
   })
   .then((data) => {
-    setId(data.id)
-    setUserId(data.id)
+        setId(data.id)
       setSuccess(true)
-      localStorage.setItem('token', data.token)
+    
       setTimeout(() => {
        routeChange('../play', id)
-      },1000)
+      },4000)
   })
   .catch(function (error) {
     console.log("Fetch problems:" + error.message);
@@ -50,31 +47,26 @@ export const LoginForm = ({ setUserId }: { setUserId: React.Dispatch<React.SetSt
     setTimeout(() => {
       setError(false)
       setSuccess(false)
-    }, 3000)
+    }, 4000)
   })
 }
  return(
     <>
+        <p>{savedToken}</p>
+        <p>{id}</p>
         <div className="subHeader">
-            <h3>LogIn</h3>
+            <h3>Change yor name</h3>
         </div>
         <section>
-             <form className="loginForm" onSubmit={handleSubmit}>
+             <form className="updateForm" onSubmit={handleSubmit}>
                  <input type="text" className="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" autoFocus />
-                 <input type="password" value={pass} onChange={e => setPass(e.target.value)} className="pass" required placeholder="Your password" />
-                 
+
                  <button type="submit">Sign in</button>
              </form>
          </section>
-         <div className="regLink">
-             <p>
-                 Haven't you an account?
-                 <a href="http://localhost:5173/register" id="registerLink"> Register</a> please.
-             </p>
-         </div>
-         <div className="resultLogin">
-            {error && <p>Your name or password are wrong</p>}
-            {success && <p>Hello again <span>{name}</span> !!! Let's play to dices game !</p>}
+         <div>
+            {error && <p>This name already exists</p>}
+            {success && <p>Your new name is  <span><h3>{name}</h3></span> Let's play to dices game !</p>}
 
          </div>
     </>

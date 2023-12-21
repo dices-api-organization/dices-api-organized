@@ -1,56 +1,108 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
-export const Play = () => {
+export const Play = ({ id }: { id: string }) => {
+
+ 
+    const navigate = useNavigate();
+    
+    const routeChange = (path:string, id:string) =>{  
+            navigate(path);
+    }
+    
     const [dice1, setDice1] = useState(0)
     const [dice2, setDice2] = useState(0)
-
-    let allThrowsSession = [{}]
-    let arrDice:number[] = []
-    const handlePlay = () => {
-        let i = 0;
-      
-        while(i < 2){
-            const rand = () => Math.floor((Math.random() * 6) + 1)
-            arrDice[i] = rand()
-            console.log(i, arrDice[i])
-            i++;
-        }
-        const newThrow = {
-            dice1: arrDice[0],
-            dice2: arrDice[1]
-        }
-        setDice1(arrDice[0])
-        setDice2(arrDice[1])
-        allThrowsSession.push(newThrow)
-        //postNewDicesThrow(newThrow)
+    const [err, setErr] = useState('')
+    const [success, setSuccess] = useState('')
+   const userId = id
+    const savedToken = localStorage.getItem('token')
+    const handlePlay = async () => {
+            setErr('')
+        fetch('http://localhost:3000/play/throw', 
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Authorization': `Bearer ${savedToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id:userId,
+                })
+            })
+            .then((response) => {
+                if (!response.ok){
+                  setErr('Response throw dices was not ok')
+                  throw new Error('Response throw dices was not ok')
+                }
+                return response.json()
+              })
+              .then((data) => {
+                console.log(data.ok)
+                setDice1(data.diceThrow1)
+                setDice2(data.diceThrow2)
+              })
+              .catch(function (error) {
+                setErr("Fetch problems:" + error.message)
+                console.log("Fetch problems: " + error.message);
+              })
+    }
+    const handleUpdate = () => {
+        setErr('')
+        setSuccess('')
+        routeChange('../play/update', id)
+    }
+    const handleDelete = () => {
+        setErr('')
+        setSuccess('')
+        fetch('http://localhost:3000/play/delete', 
+            {
+                method: 'DELETE',
+                mode: 'cors',
+                headers: {
+                    'Authorization': `Bearer ${savedToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id:id,
+                })
+            })
+            .then((response) => {
+                if (!response.ok){
+                  throw new Error('The user wasn\'t deleted. An error occurred')
+                }
+                return response.json()
+              })
+              .then((data) => {
+                console.log(data.ok)
+                setSuccess('The user was deleted succesfully!')
+              })
+              .catch(function (error) {
+                setErr("Fetch problems:" + error.message)
+                console.log("Fetch problems: " + error.message);
+              })
     }
 
-    /* const postNewDicesThrow = (newThrow:object) => {
-        fetch('http://localhost:3000/userRegister', {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-              'Content-Type': 'application/json',
-              'auth': token
-            },
-            body: JSON.stringify(newThrow)
-          })
-    } */
     return(
         <>
-            <h3>Dice 1: <span>{dice1} </span></h3>
-            <h3>Dice 2: <span>{dice2}</span></h3>
-            {dice1 + dice2 == 7 && <h1><span>Winner</span></h1>}
+            {id != '' && <h4>id: {id} </h4>}
+            {savedToken && <h4 className="token">token: {savedToken} </h4>}
+            {dice1 !== 0 && <h3>Dice 1: <span>{dice1} </span></h3>}
+            {dice2 !== 0 && <h3>Dice 2: <span>{dice2}</span></h3>}
+            {dice1 + dice2 == 7 && <h1><span>You win!!</span></h1>}
+            {dice1 + dice2 > 0 && dice1 + dice2 !== 7 && <h1><span>You lose!!</span></h1>}
             <nav>
                 <button onClick={handlePlay}>Play</button>
-                <button>Update</button>
+                <button onClick={handleUpdate}>Update</button>
                 <button>Get players</button>
-                <button>Delete throw</button>
+                <button onClick={handleDelete}>Delete throw</button>
                 <button>Get lis of throws</button>
                 <button>Winners ranking</button>
                 <button>Loosers ranking</button>
                 <button>Get the best average player</button>
             </nav>
+            {success != '' && <p> <span>{success}</span>!</p>}
+            {err}
         </>
     )
 }

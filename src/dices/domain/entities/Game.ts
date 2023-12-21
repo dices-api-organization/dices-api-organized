@@ -1,9 +1,8 @@
-import { Player } from './Player';
 
-export interface Game extends Player {
+export interface Game {
   idDiceThrow?: string | number;
-  idPlayer: Player;
+  idPlayer?: string;
   diceThrow1: number;
   diceThrow2: number;
-  isWinner: boolean;
+  isWinner?: boolean;
 }

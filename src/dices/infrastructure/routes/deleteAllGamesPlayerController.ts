@@ -10,7 +10,7 @@ export const deleteAllGamesPlayerController = async (
   res: Response) => {
   
   finalUseCases
-  .deleteAllGamesFromPlayer(req.body._id)
+  .deleteAllGamesFromPlayer(req.body.id)
   .then((value: unknown) => {
     if (value) res.status(200).send(value);
     else res.status(404).send(value);
