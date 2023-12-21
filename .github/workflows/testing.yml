@@ -7,14 +7,13 @@ on:
 
 jobs:
     deploy:
-        runs-on: windows-latest
+        runs-on: ubuntu-22.04
         steps:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
-                node-version: 20.8.0
+                node-version: 21
             - run: npm install
             - run: npm install --save-dev jest
-            - run: npm install --save-dev supertest
             - run: npm test
               
