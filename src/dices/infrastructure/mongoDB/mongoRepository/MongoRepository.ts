@@ -152,21 +152,22 @@ export class MongoGameRepository implements GameRepository {
     return listingText;
   }
 
-  async allPlayersAndRatings(): Promise<string | null> {
+  async allPlayersAndRatings(): Promise< Player[] | null> {
     const allPlayers: Array<userSchemaInterface> | null =
       await UserModel.find();
 
     if (!allPlayers) {
       return null;
     }
-
-    let playersList = '';
+    console.log(allPlayers)
+    /* let playersList: string[] = [];
     allPlayers.forEach((element) => {
-      playersList += `${element.toJSON().player_name} has a success rate of ${
+      playersList.push(`${element.toJSON().name} has a success rate of ${
         element.toJSON().success_rate
-      }\n`;
+      }\n`)
     });
-    return playersList;
+    console.log('helllo '+ playersList) */
+    return allPlayers;
 
   }
 

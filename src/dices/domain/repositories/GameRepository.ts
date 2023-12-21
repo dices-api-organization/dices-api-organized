@@ -8,7 +8,7 @@ export interface GameRepository {
   findMaxWinner(): Promise<string | null>;
   findMinLoser(): Promise<string | null>;
   ratesListing(): Promise<string | null>;
-  allPlayersAndRatings(): Promise<string | null>;
+  allPlayersAndRatings(): Promise< Player[] | null>;
   modifyPlayerName(playerId: string, newName: string): Promise<boolean>;
   playGame(playerId: number): Promise<Game | null>;
   deleteAllGamesFromPlayer(playerId: number): Promise<boolean>;

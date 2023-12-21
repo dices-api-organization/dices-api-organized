@@ -14,6 +14,7 @@ export const Play = ({ id }: { id: string }) => {
     const [dice2, setDice2] = useState(0)
     const [err, setErr] = useState('')
     const [success, setSuccess] = useState('')
+    const [successArr, setSuccessArr] = useState([{}])
    const userId = id
     const savedToken = localStorage.getItem('token')
     const handlePlay = async () => {
@@ -82,7 +83,34 @@ export const Play = ({ id }: { id: string }) => {
                 console.log("Fetch problems: " + error.message);
               })
     }
-
+    const handlePlayers = () => {
+      setErr('')
+      setSuccess('')
+      setSuccessArr([])
+      fetch('http://localhost:3000/play/players', 
+            {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Authorization': `Bearer ${savedToken}`,
+                    'Content-Type': 'application/json'
+                },
+              
+            })
+            .then((response) => {
+                if (!response.ok){
+                  throw new Error('Response list of players were not ok')
+                }
+                return response.json()
+              })
+              .then((data) => {
+                setSuccessArr(data)                
+              })
+              .catch(function (error) {
+                setErr("Fetch problems:" + error.message)
+                console.log("Fetch problems: " + error.message);
+              })
+    }
     return(
         <>
             {id != '' && <h4>id: {id} </h4>}
@@ -94,15 +122,19 @@ export const Play = ({ id }: { id: string }) => {
             <nav>
                 <button onClick={handlePlay}>Play</button>
                 <button onClick={handleUpdate}>Update</button>
-                <button>Get players</button>
+                <button onClick={handlePlayers}>Get players</button>
                 <button onClick={handleDelete}>Delete throw</button>
-                <button>Get lis of throws</button>
+                <button>Get list of throws</button>
                 <button>Winners ranking</button>
                 <button>Loosers ranking</button>
                 <button>Get the best average player</button>
             </nav>
-            {success != '' && <p> <span>{success}</span>!</p>}
             {err}
+            {success != '' && <p> <span>{success}</span>!</p>}
+            {successArr.length > 1 && successArr.map((value) => (
+               <p > {`User`} <span>{value.name}</span> has a success rate of  <span>{value.success_rate}</span></p>
+             ))}
+            
         </>
     )
 }

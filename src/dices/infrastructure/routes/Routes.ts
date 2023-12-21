@@ -22,7 +22,7 @@ dicesRouter.put('/play/update', putModifyPlayerNameController);
 dicesRouter.delete('/play/delete', deleteAllGamesPlayerController);
 dicesRouter.post('/play/throw', postPlayGameController);
 dicesRouter.get('/play', getAllGamesController);
-dicesRouter.get('/play', getPlayersAndRatingsController);
+dicesRouter.get('/play/players', getPlayersAndRatingsController);
 dicesRouter.get('/play', getRatesListingController);
 dicesRouter.get('/play', getMinLoserController);
 dicesRouter.get('/play', getMaxWinnerController);

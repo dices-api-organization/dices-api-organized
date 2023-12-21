@@ -31,7 +31,7 @@ export class UseCases {
     return ratesListing;
   }
 
-  async allPlayersAndRatings(): Promise<string | null> {
+  async allPlayersAndRatings(): Promise< Player[] | null> {
     const playersRatings = await this.gameRepository.allPlayersAndRatings();
     return playersRatings;
   }
