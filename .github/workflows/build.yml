@@ -4,8 +4,10 @@ on:
   push:
     branches: [docker]
   pull_request:
-    branches: [docker]
+    branches: [main]
     types: [opened, synchronize]
+    paths:
+      - ".github/workflows/build.yml"
 
 jobs:
   build:

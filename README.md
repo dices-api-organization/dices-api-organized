@@ -8,10 +8,5 @@ RUTAS:
 
 
 ```sh
-npm run prettier-format
-```
-
-
-```sh
-npm run dev:watcher
+terminal test text
 ```
