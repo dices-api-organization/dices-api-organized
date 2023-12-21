@@ -52,6 +52,7 @@ export class MongoGameRepository implements GameRepository {
   }
 
   async postUserLogin(newUser: Player): Promise<UserSessionToken | null> {
+
     const isNameRegistered = await UserModel.find({ name: newUser.name });
 
     if (isNameRegistered) {
@@ -166,6 +167,7 @@ export class MongoGameRepository implements GameRepository {
       }\n`;
     });
     return playersList;
+
   }
 
   async modifyPlayerName(playerId: string, newName: string): Promise<boolean> {
@@ -174,9 +176,7 @@ export class MongoGameRepository implements GameRepository {
         { _id: playerId },
         { $set: { name: newName } }
       );
-    console.log('aqui esta el payload' + newName, playerId);
     if (!modifiedPlayer) {
-      console.log('aqui esta el payload' + newName, playerId);
       return false;
     }
 
