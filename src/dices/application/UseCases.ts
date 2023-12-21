@@ -16,54 +16,48 @@ export class UseCases {
     return userlogged;
   }
 
-  async findMaxWinner(): Promise<string | null>{
+  async findMaxWinner(): Promise<string | null> {
     const findWinner = await this.gameRepository.findMaxWinner();
     return findWinner;
-
   }
 
-  async findMinLoser(): Promise<string | null>{
+  async findMinLoser(): Promise<string | null> {
     const findLoser = await this.gameRepository.findMinLoser();
     return findLoser;
-
   }
 
-  async ratesListing(): Promise<string | null>{
+  async ratesListing(): Promise<string | null> {
     const ratesListing = await this.gameRepository.ratesListing();
     return ratesListing;
-
   }
 
-  async allPlayersAndRatings(): Promise<string | null>{
+  async allPlayersAndRatings(): Promise<string | null> {
     const playersRatings = await this.gameRepository.allPlayersAndRatings();
     return playersRatings;
-
   }
 
-  async modifyPlayerName(newUser: Player, newName: string): Promise<boolean>{
-    const modifyName = await this.gameRepository.modifyPlayerName(newUser, newName);
+  async modifyPlayerName(playerId: string, newName: string): Promise<boolean> {
+    const modifyName = await this.gameRepository.modifyPlayerName(
+      playerId,
+      newName
+    );
     return modifyName;
-
   }
 
-  async playGame(playerId: number): Promise<Game | null>{
+  async playGame(playerId: number): Promise<Game | null> {
     const play = await this.gameRepository.playGame(playerId);
     return play;
-
   }
 
-  async deleteAllGamesFromPlayer(playerId: number): Promise<boolean>{
-    const deleteAllGames = await this.gameRepository.deleteAllGamesFromPlayer(playerId);
+  async deleteAllGamesFromPlayer(playerId: number): Promise<boolean> {
+    const deleteAllGames =
+      await this.gameRepository.deleteAllGamesFromPlayer(playerId);
     return deleteAllGames;
-
   }
 
-  async listAllGamesFromPlayer(playerId: number): Promise<string | null>{
-    const listAllGamesFromPlayer = await this.gameRepository.listAllGamesFromPlayer(playerId);
+  async listAllGamesFromPlayer(playerId: number): Promise<string | null> {
+    const listAllGamesFromPlayer =
+      await this.gameRepository.listAllGamesFromPlayer(playerId);
     return listAllGamesFromPlayer;
-
   }
-
-
-
 }

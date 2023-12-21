@@ -6,6 +6,7 @@ import { RegisterForm } from './components/RegisterForm'
 import { SelectBD } from './components/SelectBD'
 import { Play } from './components/Play'
 import { useState } from 'react'
+import { UpdateForm } from './components/UpdateForm'
 
 
 function App(): JSX.Element {
@@ -21,6 +22,7 @@ function App(): JSX.Element {
         <Route path='/login' element={<LoginForm setUserId={setUserId}/>} />
         <Route path='/register' element={<RegisterForm setUserId={setUserId}/>} />
         <Route path='/play'  element={<Play id={userId} />} />
+        <Route path='/play/update'  element={<UpdateForm userId={userId} />} />
 
         </Routes>
     </>

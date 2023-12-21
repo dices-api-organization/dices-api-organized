@@ -7,6 +7,11 @@
 span{
   color: red;
 }
+.token{
+  width: 230px;
+  white-space: initial;
+  text-overflow: ellipsis;
+}
 .logo {
   height: 6em;
   padding: 1.5em;
