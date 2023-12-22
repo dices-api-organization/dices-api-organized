@@ -49,8 +49,8 @@ export const Play = ({ id }: { id: string }) => {
               })
               .then((data) => {
                 console.log(data.ok)
-                setDice1(data.diceThrow1)
-                setDice2(data.diceThrow2)
+                setDice1(data.dice_1)
+                setDice2(data.dice_2)
               })
               .catch(function (error) {
                 setErr("Fetch problems:" + error.message)

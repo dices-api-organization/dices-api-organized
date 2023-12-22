@@ -10,7 +10,7 @@ export interface GameRepository {
   ratesListing(): Promise<string | null>;
   allPlayersAndRatings(): Promise<string | null>;
   modifyPlayerName(playerId: string, newName: string): Promise<boolean>;
-  playGame(playerId: number): Promise<Game | null>;
+  playGame(playerId: number): Promise<object | null>;
   deleteAllGamesFromPlayer(playerId: number): Promise<boolean>;
   listAllGamesFromPlayer(playerId: string): Promise<object[] | null>;
 }
