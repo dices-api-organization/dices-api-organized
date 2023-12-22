@@ -1,7 +1,9 @@
 import { Response } from 'express';
 import  {finalUseCases}  from './injectionDecider';
 
-export const getMaxWinnerController = (res: Response) => {
+
+export const getMaxWinnerController = (req: Request,res: Response) => {
+
 
   finalUseCases
     .findMaxWinner()

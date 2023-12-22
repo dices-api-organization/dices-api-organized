@@ -16,12 +16,12 @@ export class UseCases {
     return userlogged;
   }
 
-  async findMaxWinner(): Promise<string | null> {
+  async findMaxWinner(): Promise<object | null> {
     const findWinner = await this.gameRepository.findMaxWinner();
     return findWinner;
   }
 
-  async findMinLoser(): Promise<string | null> {
+  async findMinLoser(): Promise<object | null> {
     const findLoser = await this.gameRepository.findMinLoser();
     return findLoser;
   }
@@ -55,7 +55,7 @@ export class UseCases {
     return deleteAllGames;
   }
 
-  async listAllGamesFromPlayer(playerId: number): Promise<string | null> {
+  async listAllGamesFromPlayer(playerId: string): Promise<object[] | null> {
     const listAllGamesFromPlayer =
       await this.gameRepository.listAllGamesFromPlayer(playerId);
     return listAllGamesFromPlayer;
