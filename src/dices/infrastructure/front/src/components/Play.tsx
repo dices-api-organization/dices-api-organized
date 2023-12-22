@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { rateOfPlayers } from "./rateOfPlayers";
 
 export const Play = ({ id }: { id: string }) => {
 
@@ -14,7 +15,8 @@ export const Play = ({ id }: { id: string }) => {
     const [dice2, setDice2] = useState(0)
     const [err, setErr] = useState('')
     const [success, setSuccess] = useState('')
-    const [successArr, setSuccessArr] = useState([{}])
+    const [successArr, setSuccessArr] = useState([])
+    const [rank, setRank] = useState([])
    const userId = id
     const savedToken = localStorage.getItem('token')
     const handlePlay = async () => {
@@ -51,11 +53,17 @@ export const Play = ({ id }: { id: string }) => {
     const handleUpdate = () => {
         setErr('')
         setSuccess('')
+        setRank([])
+        setDice1(0)
+        setDice2(0)
         routeChange('../play/update', id)
     }
     const handleDelete = () => {
         setErr('')
         setSuccess('')
+        setRank([])
+        setDice1(0)
+        setDice2(0)
         fetch('http://localhost:3000/play/delete', 
             {
                 method: 'DELETE',
@@ -76,7 +84,9 @@ export const Play = ({ id }: { id: string }) => {
               })
               .then((data) => {
                 console.log(data.ok)
-                setSuccess('The user was deleted succesfully!')
+                setSuccess(`Now ${data.name} has: ${data.num_of_games} games, 
+                ${data.num_of_wins} wins, 
+                ${data.success_rate} success rate.`)
               })
               .catch(function (error) {
                 setErr("Fetch problems:" + error.message)
@@ -87,6 +97,9 @@ export const Play = ({ id }: { id: string }) => {
       setErr('')
       setSuccess('')
       setSuccessArr([])
+      setRank([])
+      setDice1(0)
+      setDice2(0)
       fetch('http://localhost:3000/play/players', 
             {
                 method: 'GET',
@@ -111,6 +124,38 @@ export const Play = ({ id }: { id: string }) => {
                 console.log("Fetch problems: " + error.message);
               })
     }
+    const handleRates = () =>{
+      setErr('')
+      setSuccess('')
+      setSuccessArr([])
+      setRank([])
+      setDice1(0)
+      setDice2(0)
+      fetch(`http://localhost:3000/play/rates`, 
+            {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Authorization': `Bearer ${savedToken}`,
+                    'Content-Type': 'application/json'
+                },
+              
+            })
+            .then((response) => {
+                if (!response.ok){
+                  throw new Error('Response list of players were not ok')
+                }
+                return response.json()
+              })
+              .then((data) => {
+                setRank(data)      
+                setSuccess(`The total average of all players are  ${rateOfPlayers(data)}`)
+              })
+              .catch(function (error) {
+                setErr("Fetch problems:" + error.message)
+                console.log("Fetch problems: " + error.message);
+              })
+    }
     return(
         <>
             {id != '' && <h4>id: {id} </h4>}
@@ -127,14 +172,16 @@ export const Play = ({ id }: { id: string }) => {
                 <button>Get list of throws</button>
                 <button>Winners ranking</button>
                 <button>Loosers ranking</button>
-                <button>Get the best average player</button>
+                <button onClick={handleRates}>Get the best average player</button>
             </nav>
             {err}
-            {success != '' && <p> <span>{success}</span>!</p>}
-            {successArr.length > 1 && successArr.map((value) => (
+            {success != '' && <p><span>{success}</span></p>}
+            {successArr.length > 0 && successArr.map((value) => (
                <p > {`User`} <span>{value.name}</span> has a success rate of  <span>{value.success_rate}</span></p>
              ))}
-            
+            {rank.length > 0 && rank.map((value, index) => (
+               <p > {index + 1}º   <span>{value.name}</span>    has a success rate of    <span>{Math.round(value.success_rate)}</span></p>
+             ))}
         </>
     )
 }

@@ -108,24 +108,25 @@ export class MongoGameRepository implements GameRepository {
     return `Player ${minLoser.name} is the lowest loser, with a score of ${minLoser.success_rate}`;
   }
 
-  async ratesListing(): Promise<string | null> {
-    const ratesList: Array<userSchemaInterface> | null = await UserModel.find()
+  async ratesListing(): Promise<Player[] | null> {
+    const ratesList: Array<userSchemaInterface> | null = await UserModel.find({success_rate:{$gt:1}})
       .sort({ success_rate: -1 })
-      .limit(1);
-
+      //.limit(1);
+    console.log(ratesList)
     if (!ratesList) {
       return null;
     }
 
-    let listingText = '';
+    
+    /* let listingText = '';
     ratesList.forEach((element) => {
       listingText += `${element.toJSON().player_name} has a success rate of ${
         element.toJSON().success_rate
       }\n`;
     });
-
+ */
     // Now find total average of all players
-
+/* 
     const allPlayers: Array<userSchemaInterface> | null =
       await UserModel.find();
 
@@ -146,10 +147,10 @@ export class MongoGameRepository implements GameRepository {
     }
 
     const totalAverage = totalSum / allSuccessRates.length;
+ */
+    //listingText += `\nAnd finally, the total average for all players is: ${totalAverage}`;
 
-    listingText += `\nAnd finally, the total average for all players is: ${totalAverage}`;
-
-    return listingText;
+    return ratesList;
   }
 
   async allPlayersAndRatings(): Promise< Player[] | null> {
@@ -160,15 +161,8 @@ export class MongoGameRepository implements GameRepository {
       return null;
     }
     console.log(allPlayers)
-    /* let playersList: string[] = [];
-    allPlayers.forEach((element) => {
-      playersList.push(`${element.toJSON().name} has a success rate of ${
-        element.toJSON().success_rate
-      }\n`)
-    });
-    console.log('helllo '+ playersList) */
+    
     return allPlayers;
-
   }
 
   async modifyPlayerName(playerId: string, newName: string): Promise<boolean> {
@@ -256,35 +250,22 @@ export class MongoGameRepository implements GameRepository {
     return { diceThrow1: dice1Random, diceThrow2: dice2Random };
   }
 
-  async deleteAllGamesFromPlayer(playerId: number): Promise<boolean> {
+  async deleteAllGamesFromPlayer(playerId: number): Promise<Player | null> {
     console.log(playerId)
-    const deleteAllGames = await UserModel.deleteOne(
-      { _id: playerId })
-      console.log(playerId)
+    const deleteAllGames = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{games: []}})
+    .catch((err)=>{
+     return false;
+    })
 
-    if (!deleteAllGames){
-      return false
-    }
-/* 
-    const modifyNumOfGames: userSchemaInterface | null =
-      await UserModel.findOneAndUpdate(
-        { _id: playerId },
-        { $set: { num_of_games: 0 } }
-      );
+  const modifyNumOfGames: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{num_of_games: 0}});
 
-    const modifyNumOfWins: userSchemaInterface | null =
-      await UserModel.findOneAndUpdate(
-        { _id: playerId },
-        { $set: { num_of_wins: 0 } }
-      );
+  const modifyNumOfWins: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{num_of_wins: 0}});
 
-    const modifyRateOfSuccess: userSchemaInterface | null =
-      await UserModel.findOneAndUpdate(
-        { _id: playerId },
-        { $set: { success_rate: 0 } }
-      );
- */
-    return true;
+  const modifyRateOfSuccess: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{success_rate: 0}});
+
+  const resetPlayerGames = await UserModel.findOne({_id: playerId})
+
+    return resetPlayerGames;
   }
 
   async listAllGamesFromPlayer(playerId: number): Promise<string | null> {
