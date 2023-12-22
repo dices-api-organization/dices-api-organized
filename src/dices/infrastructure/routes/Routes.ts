@@ -21,8 +21,14 @@ dicesRouter.post('/userRegister', postUserRegisterController);
 dicesRouter.put('/play/update', putModifyPlayerNameController);
 dicesRouter.delete('/play/delete', deleteAllGamesPlayerController);
 dicesRouter.post('/play/throw', postPlayGameController);
-dicesRouter.get('/play/games', getAllGamesController);
+
+
 dicesRouter.get('/play/players', getPlayersAndRatingsController);
 dicesRouter.get('/play/rates', getRatesListingController);
+
+dicesRouter.get('/play/games/:id', getAllGamesController);
+
+
+
 dicesRouter.get('/play/min', getMinLoserController);
 dicesRouter.get('/play/max', getMaxWinnerController);

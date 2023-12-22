@@ -10,7 +10,7 @@ export const getAllGamesController = async (
   res: Response) => {
   
   finalUseCases
-  .listAllGamesFromPlayer(req.body._id)
+  .listAllGamesFromPlayer(req.params.id)
   .then((value: unknown) => {
     if (value) res.status(200).send(value);
     else res.status(404).send(value);

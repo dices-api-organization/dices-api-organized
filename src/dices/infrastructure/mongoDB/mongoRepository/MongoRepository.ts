@@ -92,7 +92,7 @@ export class MongoGameRepository implements GameRepository {
     }
   }
 
-  async findMaxWinner(): Promise<string | null> {
+  async findMaxWinner(): Promise<object | null> {
     const maxWinner: userSchemaInterface | null = await UserModel.findOne()
       .sort({ success_rate: -1 })
       .limit(1);
@@ -101,19 +101,19 @@ export class MongoGameRepository implements GameRepository {
       return null;
     }
 
-    return `Player ${maxWinner.name} is the highest winner, with a score of ${maxWinner.success_rate}`;
+    return maxWinner;
   }
 
-  async findMinLoser(): Promise<string | null> {
+  async findMinLoser(): Promise<object | null> {
     const minLoser: userSchemaInterface | null = await UserModel.findOne()
-      .sort({ success_rate: -1 })
+      .sort({ success_rate: 1 })
       .limit(1);
 
     if (!minLoser) {
       return null;
     }
 
-    return `Player ${minLoser.name} is the lowest loser, with a score of ${minLoser.success_rate}`;
+    return minLoser;
   }
 
   async ratesListing(): Promise<string | null>{
@@ -275,7 +275,7 @@ export class MongoGameRepository implements GameRepository {
     return true;
   }
 
-  async listAllGamesFromPlayer(playerId: number): Promise<string | null> {
+  async listAllGamesFromPlayer(playerId: string): Promise<object[] | null> {
     const currentPlayer: userSchemaInterface | null = await UserModel.findOne({
       _id: playerId
     });
@@ -285,15 +285,16 @@ export class MongoGameRepository implements GameRepository {
     }
 
     const playersGames = currentPlayer.games;
-    let playersGamesList = '';
+    let playersGamesList: object[] = [];
 
     if (typeof playersGames === 'undefined') {
-      playersGamesList = 'This player has no games!';
-      return playersGamesList;
+      
+      return null;
     }
 
     playersGames.forEach((element) => {
-      playersGamesList += `${element}\n`;
+      
+      playersGamesList.push(element)
     });
     return playersGamesList;
   }
