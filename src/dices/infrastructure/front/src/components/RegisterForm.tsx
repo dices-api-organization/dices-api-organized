@@ -1,21 +1,22 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { HeaderUser } from "./HeaderUser";
 
 
-export const RegisterForm = () => {
+export const RegisterForm = ({ setUserId }: { setUserId: React.Dispatch<React.SetStateAction<string>> }) => {
   const navigate = useNavigate();
-  const routeChange = (path:string) =>{  
+  const routeChange = (path:string, id:string) =>{  
     navigate(path);
 }
  const [name, setName] = useState<string>('')
  const [pass, setPass] = useState<string>('')
  const [error, setError] = useState<boolean>(false)
  const [success, setSuccess] = useState<boolean>(false)
-
+const[id, setId] = useState('')
 
  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-   fetch('http://localhost:3000/userRegister', {
+   const newUser = fetch('http://localhost:3000/userRegister', {
     method: 'POST',
     mode: 'cors',
     headers: {
@@ -27,24 +28,31 @@ export const RegisterForm = () => {
     })
   })
   .then((response) => {
-    console.log(response);
-    
-    if (response.ok) {
-      setSuccess(true)
-      setTimeout(() => {
-       routeChange('../play')
-      },1000)
-    } else {
+    if (!response.ok){
       setError(true)
+      throw new Error('Response was not ok')
     }
+    return response.json()
+  })
+  .then((data) => {
+      setId(data.id)
+      setUserId(data.id)
+      setName(data.name)
+      setSuccess(true)
+      localStorage.setItem('token', data.token)
+      setTimeout(() => {
+       routeChange('../play', id)
+      },1000)
   })
   .catch(function (error) {
     console.log("Fetch problems:" + error.message);
   })
-  setTimeout(() => {
-    setError(false)
-    setSuccess(false)
-  }, 3000)
+  .finally(() => {
+    setTimeout(() => {
+      setError(false)
+      setSuccess(false)
+    }, 3000)
+  })
 }
  return(
     <>
@@ -62,7 +70,7 @@ export const RegisterForm = () => {
          <div className="resultLogin">
             {error && <p>Change your name or password!</p>}
             {success && <p>Wellcome <span>{name}</span> !!! to the best dices game !</p>}
-           
+            
          </div>
     </>
  )
