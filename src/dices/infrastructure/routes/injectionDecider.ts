@@ -1,5 +1,5 @@
 
-let flag = 'mongodb';
+let flag = 'mysql';
 
 
 // Need flag

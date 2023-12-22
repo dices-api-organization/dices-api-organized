@@ -7,6 +7,7 @@ import { sequelizeConnection } from '../mySqlConnectionDB';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { UserSessionToken } from '../../../domain/entities/UserSessionToken';
+import { Game } from '../../../domain/entities/Game';
 import { Model } from 'sequelize';
 
 dotenv.config()
@@ -60,11 +61,11 @@ export class mySqlGameRepository implements GameRepository {
 
           comparePasswords.push(isSamePass);
 
-          console.log('LAS  COMPARACIONES!!!!!!!!!!!!!!',isSamePass)
+          
           
         }
 
-        console.log('LAS PASSWORDS!!!!!!!!!!!!!!',comparePasswords)
+     
         
 
         
@@ -72,7 +73,7 @@ export class mySqlGameRepository implements GameRepository {
 
       
         if (comparePasswords.some(match => match)) {
-          console.log('Login please!! There is a user with your credentials');
+          
           return null;
         }
 
@@ -156,7 +157,7 @@ export class mySqlGameRepository implements GameRepository {
           })
           return { id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().player_name, token: token }
         } else {
-          console.log('User not found1');
+          
           return null;
         }  
 
@@ -169,13 +170,13 @@ export class mySqlGameRepository implements GameRepository {
           })
           return { id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().player_name, token: token }
         } else {
-          console.log('User not found2');
+         
           return null;
         }  
 
 
      } else {
-        console.log('User not found3');
+        
         return null;
       }
     }
@@ -195,20 +196,16 @@ export class mySqlGameRepository implements GameRepository {
             }); 
           }).then((data)=>{
 
-            if (data?.toJSON().player_name === null){
-              return `The highest winner is Anonim with a score of ${data?.toJSON().success_rate}`;
-            }else{
-              return `The highest winner is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
-            }
+            return data
            
 
            }) 
         
         if (maxWinnerFunc) {
-          console.log(`${maxWinnerFunc}`);
+          
           return maxWinnerFunc;
         } else {
-          console.log('try  again');
+          
           return null;
         }
       }
@@ -227,19 +224,15 @@ export class mySqlGameRepository implements GameRepository {
             }); 
           }).then((data)=>{
 
-            if (data?.toJSON().player_name === null){
-              return `The lowest loser is Anonim with a score of ${data?.toJSON().success_rate}`;
-            }else{
-              return `The lowest loser is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
-            }
+            return data
 
            }) 
         
         if (minLoserFunc) {
-          console.log(`${minLoserFunc}`);
+          
           return minLoserFunc;
         } else {
-          console.log('try  again');
+          
           return null;
         }
       }
@@ -285,7 +278,7 @@ export class mySqlGameRepository implements GameRepository {
         
         if (ratesListFunc && totalAvg) {
             let finalText = `${ratesListFunc}${totalAvg}`;
-          console.log(`${ratesListFunc}, ${totalAvg}`);
+          
           return finalText;
         } else {
           
@@ -320,19 +313,17 @@ export class mySqlGameRepository implements GameRepository {
         
         if (allPlayersRatingsFunc) {
             
-          console.log(`${allPlayersRatingsFunc}`);
+          
           return allPlayersRatingsFunc;
         } else {
-          console.log('try  again');
+          
           return null;
         }
       }
 
-      
+ 
 
-
-
-      async modifyPlayerName(playerId: number, newName: string): Promise<boolean> {
+      async modifyPlayerName(playerId: string, newName: string): Promise<boolean> {
         const isRegistered = await mySqlPlayer.sync().then(()=>{
           return mySqlPlayer.findOne({
               where: {
@@ -357,12 +348,9 @@ export class mySqlGameRepository implements GameRepository {
       }
 
 
-      
+    
 
-
-
-
-      async playGame(playerId: number): Promise<boolean> {
+      async playGame(playerId: number): Promise<Game | null> {
         
         let didItWork = false;
        
@@ -375,19 +363,21 @@ export class mySqlGameRepository implements GameRepository {
 
           let resultOfGame = false;
 
+          let newGame: Game;
+
           if (dice1Random+dice2Random === 7){
             resultOfGame = true;
           }
     
-          const newGame = mySqlGame.build({ player_id: playerId, dice_1: dice1Random, dice_2: dice2Random, winOrLose: resultOfGame});
+          newGame = mySqlGame.build({ player_id: playerId, dice_1: dice1Random, dice_2: dice2Random, winOrLose: resultOfGame});
           return newGame.save();
           }).then(()=>{
           
-          console.log("New game added to database!");
+          
           didItWork = true;
           })
-          .catch(()=>{
-          console.log('Error syncing table and model for GAMES.')
+          .catch((err)=>{
+            throw err;
           });
 
           let totalLosses = 0;
@@ -451,9 +441,6 @@ export class mySqlGameRepository implements GameRepository {
       }
 
 
-
-
-
       async deleteAllGamesFromPlayer(playerId: number): Promise<boolean> {
         
         let didItWork = false;
@@ -466,11 +453,11 @@ export class mySqlGameRepository implements GameRepository {
            
        }).then(()=>{
           
-        console.log("All games deleted!");
+       
         didItWork = true;
         })
-        .catch(()=>{
-        console.log('Error deleting games.')
+        .catch((err)=>{
+        throw err;
         });
 
           
@@ -480,9 +467,9 @@ export class mySqlGameRepository implements GameRepository {
 
 
 
-      async listAllGamesFromPlayer(playerId: number): Promise<string | null> {
+      async listAllGamesFromPlayer(playerId: string): Promise<object[] | null> {
         
-        let finalList = '';
+        let finalList: object[] = [];
        
         await mySqlGame.sync().then(()=>{
           return mySqlGame.findAll({
@@ -491,10 +478,7 @@ export class mySqlGameRepository implements GameRepository {
         }).then((data)=>{
          
           data.forEach((element, index)=>{
-            finalList += `GAME NUMBER ${index+1}\n\n
-            Dice 1: ${element.toJSON().dice_1}\n
-            Dice 2: ${element.toJSON().dice_2}\n
-            Was it a win? ${element.toJSON().winOrLose}\n\n\n`
+            finalList.push(element)
           })
           
         });
