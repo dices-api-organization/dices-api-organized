@@ -1,7 +1,7 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import  {finalUseCases}  from './injectionDecider';
 
-export const getMinLoserController = (res: Response) => {
+export const getMinLoserController = (req: Request, res: Response) => {
     
   finalUseCases
     .findMinLoser()

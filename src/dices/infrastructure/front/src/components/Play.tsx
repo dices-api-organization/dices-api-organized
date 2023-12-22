@@ -14,9 +14,12 @@ export const Play = ({ id }: { id: string }) => {
     const [dice2, setDice2] = useState(0)
     const [err, setErr] = useState('')
     const [successArrThrows, setSuccessArrThrows] = useState([])
-    const [name, setName] = useState<string>('')
-    const [rate, setRate] = useState<string>('')
-    const [success, setSuccess] = useState<boolean>(false)
+    const [winnerName, setWinnerName] = useState<string>('')
+    const [winnerRate, setWinnerRate] = useState<string>('')
+    const [loserName, setLoserName] = useState<string>('')
+    const [loserRate, setLoserRate] = useState<string>('')
+    const [successWin, setSuccessWin] = useState<boolean>(false)
+    const [successLose, setSuccessLose] = useState<boolean>(false)
     const savedToken = localStorage.getItem('token')
     const handlePlay = async () => {
             setErr('')
@@ -140,9 +143,9 @@ export const Play = ({ id }: { id: string }) => {
 
             
 
-            setName(data.name)
-            setRate(data.success_rate)
-            setSuccess(true)
+            setWinnerName(data.name)
+            setWinnerRate(data.success_rate)
+            setSuccessWin(true)
             
             
           })
@@ -152,9 +155,48 @@ export const Play = ({ id }: { id: string }) => {
           }).finally(() => {
             setTimeout(() => {
               setErr('')
-              setSuccess(false)
+              setSuccessWin(false)
             }, 8000)
           })
+}
+
+const handleMinLoser = () => {
+  setErr('')
+  fetch(`http://localhost:3000/play/min`, 
+      {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+              'Authorization': `Bearer ${savedToken}`,
+              'Content-Type': 'application/json'
+          }
+      })
+      .then((response) => {
+          if (!response.ok){
+            throw new Error('Could not get list of throws')
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data)
+
+          
+
+          setLoserName(data.name)
+          setLoserRate(data.success_rate)
+          setSuccessLose(true)
+          
+          
+        })
+        .catch(function (error) {
+          setErr("Fetch problems:" + error.message)
+          console.log("Fetch problems: " + error.message);
+        }).finally(() => {
+          setTimeout(() => {
+            setErr('')
+            setSuccessLose(false)
+          }, 8000)
+        })
 }
 
     return(
@@ -170,7 +212,9 @@ export const Play = ({ id }: { id: string }) => {
                <p ><span>DICE 1:</span> {value.dice_1} <span>DICE 2:</span> {value.dice_2} <span>WIN OR LOSE?</span> {value.winOrLose ? 'WIN!' : 'LOSE!'}</p>
              ))}
 
-              {success && <p>The max winner is <span>{name}</span> with a success rate of <span>{rate}</span></p>}
+              {successWin && <p>The max winner is <span>{winnerName}</span> with a success rate of <span>{winnerRate}</span></p>}
+
+              {successLose && <p>The min loser is <span>{loserName}</span> with a success rate of <span>{loserRate}</span></p>}
            
             <nav>
                 <button onClick={handlePlay}>Play</button>
@@ -179,6 +223,7 @@ export const Play = ({ id }: { id: string }) => {
                 <button onClick={handleDelete}>Delete throw</button>
                 <button onClick={handleListThrows}>Get lis of throws</button>
                 <button onClick={handleMaxWinner}>Get max winner</button>
+                <button onClick={handleMinLoser}>Get min loser</button>
                 <button>Get the best average player</button>
             </nav>
             {err}

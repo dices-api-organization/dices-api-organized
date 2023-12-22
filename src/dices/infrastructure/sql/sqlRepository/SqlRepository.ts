@@ -64,7 +64,7 @@ export class mySqlGameRepository implements GameRepository {
 
  // De momento, todo al mismo tiempo que el login
 
-    async findMaxWinner(): Promise<string | null> {
+    async findMaxWinner(): Promise<object | null> {
         const maxWinnerFunc = await mySqlPlayer.sync().then(()=>{
             return mySqlPlayer.findOne({
           
@@ -77,7 +77,7 @@ export class mySqlGameRepository implements GameRepository {
               ]
             }); 
           }).then((data)=>{
-            return `The highest winner is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
+            return data;
            }) 
         
         if (maxWinnerFunc) {
@@ -89,7 +89,7 @@ export class mySqlGameRepository implements GameRepository {
         }
       }
 
-      async findMinLoser(): Promise<string | null> {
+      async findMinLoser(): Promise<object | null> {
         const minLoserFunc = await mySqlPlayer.sync().then(()=>{
             return mySqlPlayer.findOne({
           
@@ -102,7 +102,7 @@ export class mySqlGameRepository implements GameRepository {
               ]
             }); 
           }).then((data)=>{
-            return `The lowest loser is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
+            return data;
            }) 
         
         if (minLoserFunc) {

@@ -98,7 +98,7 @@ export class MongoGameRepository implements GameRepository {
 
   async findMinLoser(): Promise<object | null> {
     const minLoser: userSchemaInterface | null = await UserModel.findOne()
-      .sort({ success_rate: -1 })
+      .sort({ success_rate: 1 })
       .limit(1);
 
     if (!minLoser) {
