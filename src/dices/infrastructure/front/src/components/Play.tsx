@@ -13,6 +13,10 @@ export const Play = ({ id }: { id: string }) => {
     const [dice1, setDice1] = useState(0)
     const [dice2, setDice2] = useState(0)
     const [err, setErr] = useState('')
+
+    const [success, setSuccess] = useState('')
+   const userId = id
+
     const [successArrThrows, setSuccessArrThrows] = useState([])
     const [winnerName, setWinnerName] = useState<string>('')
     const [winnerRate, setWinnerRate] = useState<string>('')
@@ -20,6 +24,7 @@ export const Play = ({ id }: { id: string }) => {
     const [loserRate, setLoserRate] = useState<string>('')
     const [successWin, setSuccessWin] = useState<boolean>(false)
     const [successLose, setSuccessLose] = useState<boolean>(false)
+
     const savedToken = localStorage.getItem('token')
     const handlePlay = async () => {
             setErr('')
@@ -32,8 +37,7 @@ export const Play = ({ id }: { id: string }) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    id:id,
-                    
+                    id:userId,
                 })
             })
             .then((response) => {
@@ -55,10 +59,12 @@ export const Play = ({ id }: { id: string }) => {
     }
     const handleUpdate = () => {
         setErr('')
+        setSuccess('')
         routeChange('../play/update', id)
     }
     const handleDelete = () => {
         setErr('')
+        setSuccess('')
         fetch('http://localhost:3000/play/delete', 
             {
                 method: 'DELETE',
@@ -73,13 +79,13 @@ export const Play = ({ id }: { id: string }) => {
             })
             .then((response) => {
                 if (!response.ok){
-                  throw new Error('Response throw dices was not ok')
+                  throw new Error('The user wasn\'t deleted. An error occurred')
                 }
                 return response.json()
               })
               .then((data) => {
                 console.log(data.ok)
-                
+                setSuccess('The user was deleted succesfully!')
               })
               .catch(function (error) {
                 setErr("Fetch problems:" + error.message)
@@ -226,6 +232,7 @@ const handleMinLoser = () => {
                 <button onClick={handleMinLoser}>Get min loser</button>
                 <button>Get the best average player</button>
             </nav>
+            {success != '' && <p> <span>{success}</span>!</p>}
             {err}
         </>
     )
