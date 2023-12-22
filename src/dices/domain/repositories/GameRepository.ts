@@ -5,12 +5,12 @@ import { UserSessionToken } from '../entities/UserSessionToken';
 export interface GameRepository {
   postNewUser(newUser: Player): Promise<UserSessionToken | null>;
   postUserLogin(newUser: Player): Promise<UserSessionToken | null>;
-  findMaxWinner(): Promise<string | null>;
-  findMinLoser(): Promise<string | null>;
+  findMaxWinner(): Promise<object | null>;
+  findMinLoser(): Promise<object | null>;
   ratesListing(): Promise<string | null>;
   allPlayersAndRatings(): Promise<string | null>;
   modifyPlayerName(playerId: string, newName: string): Promise<boolean>;
   playGame(playerId: number): Promise<Game | null>;
   deleteAllGamesFromPlayer(playerId: number): Promise<boolean>;
-  listAllGamesFromPlayer(playerId: number): Promise<string | null>;
+  listAllGamesFromPlayer(playerId: string): Promise<object[] | null>;
 }
