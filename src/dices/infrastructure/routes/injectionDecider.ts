@@ -10,5 +10,5 @@ let finalUseCases: UseCases;
 finalUseCases = require('../mongoDependencyInjection').useCases;
 }
 
-
+console.log(bbdd + 'selected')
 export { finalUseCases };

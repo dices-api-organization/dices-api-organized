@@ -4,7 +4,6 @@ import  {finalUseCases}  from './injectionDecider';
 
 export const getMaxWinnerController = (req: Request,res: Response) => {
 
-
   finalUseCases
     .findMaxWinner()
     .then((value: unknown) => {

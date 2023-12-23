@@ -16,9 +16,11 @@ const createServerFunction = () => {
   app.use(urlencoded({ extended: true }));
   app.use('/', dicesRouter);
   app.use('/play', auth, dicesRouter);
-  app.post('/configbd', (req:Request, res:Response) => {
+  app.use('/configdb', (req:Request, res:Response) => {
     const {flag} = req.body
+    console.log(flag)
     bbdd = flag
+    res.status(200).send(flag)
   })
 
   return app;
