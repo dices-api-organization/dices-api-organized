@@ -230,7 +230,6 @@ const handleMinLoser = () => {
                 <button onClick={handleListThrows}>Get lis of throws</button>
                 <button onClick={handleMaxWinner}>Get max winner</button>
                 <button onClick={handleMinLoser}>Get min loser</button>
-                <button>Get the best average player</button>
             </nav>
             {success != '' && <p> <span>{success}</span>!</p>}
             {err}
