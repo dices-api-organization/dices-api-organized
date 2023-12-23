@@ -1,17 +1,12 @@
-
-const flag = 'mysql';
-
-
-// Need flag
-
+import { bbdd } from '../../../backend/createServerFunction';
 import { UseCases } from '../../application/UseCases';
 
 let finalUseCases: UseCases;
 
 
- if (flag === 'mysql') {
+ if (bbdd === 'mysql') {
    finalUseCases = require('../sqlDependenyInjection').useCases;
- } else if (flag === 'mongodb') {
+ } else if (bbdd === 'mongodb') {
 finalUseCases = require('../mongoDependencyInjection').useCases;
 }
 
