@@ -1,7 +1,5 @@
 
-
-const flag = 'mysql';
-
+let flag = 'mysql';
 
 
 // Need flag

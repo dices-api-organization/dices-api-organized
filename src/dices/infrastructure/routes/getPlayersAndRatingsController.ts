@@ -1,4 +1,4 @@
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import  {finalUseCases}  from './injectionDecider';
 
 export const getPlayersAndRatingsController = (req: Request, res: Response) => {

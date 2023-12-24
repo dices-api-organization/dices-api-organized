@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { HeaderUser } from "./HeaderUser";
 
 
 export const RegisterForm = ({ setUserId }: { setUserId: React.Dispatch<React.SetStateAction<string>> }) => {
