@@ -10,7 +10,6 @@ export const mySqlPlayer = sequelizeConnection.define('playerTest', {
       allowNull: false,
     unique:true
     },
-    success_rate:{type: Sequelize.DataTypes.INTEGER,
-      defaultValue: 0}
+    success_rate:{type: Sequelize.DataTypes.INTEGER}
   
   });

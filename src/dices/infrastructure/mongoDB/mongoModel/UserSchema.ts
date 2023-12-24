@@ -12,7 +12,7 @@ export interface userSchemaInterface extends Document {
 const userSchema = new Schema({
   name: { type: String, required: true },
   password: { type: String, required: true },
-  success_rate: { type: Number, required: false, default: 0 },
+  success_rate: { type: Number, required: false },
   games:[
     {dice_1: { type: Number, required: false }, dice_2: { type: Number, required: false }, winOrLose: { type: Boolean, required: false }}
   ],
