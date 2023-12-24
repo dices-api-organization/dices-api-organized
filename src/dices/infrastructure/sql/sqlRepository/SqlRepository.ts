@@ -3,19 +3,119 @@ import { GameRepository } from '../../../domain/repositories/GameRepository';
 import { mySqlGame } from '../sqlModel/MySqlGameModel';
 import { mySqlPlayer } from '../sqlModel/MySqlPlayerModel';
 import { sequelizeConnection } from '../mySqlConnectionDB';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { UserSessionToken } from '../../../domain/entities/UserSessionToken';
+import { Game } from '../../../domain/entities/Game';
+import { Model } from 'sequelize';
+
+dotenv.config()
+
+const secret = process.env.SECRET_KEY ?? 'sin secretos';
 
 export class mySqlGameRepository implements GameRepository {
     async postNewUser(newUser: Player): Promise<boolean> {
       const isRegistered = await mySqlPlayer.sync().then(()=>{
         return mySqlPlayer.findOne({
             where: {
-                player_name: newUser.name
+                name: newUser.name
               }
        }); 
       });
-      if (isRegistered) {
-        console.log('false');
-        return false;
+
+
+      
+
+      if (newUser.name !== 'Anonim'){
+
+        let doesUserExist = alreadyExists.find((element) => element.toJSON().name == newUser.name);
+        
+
+        if (doesUserExist) {
+          return null;
+        }
+
+      }
+
+      // From now on, the user is NOT duplicate, and is either a new name OR anonim. So from now on, any operations can be done.
+      
+
+      // Find all players with our submitted name, just in case they are anonymous and have multiple entries in the db
+
+      
+
+      let comparePasswords: boolean[] = [];
+
+      const allUsers = await mySqlPlayer.sync().then(()=>{
+        return mySqlPlayer.findAll({ }) });
+
+        for(let i=0;i<allUsers.length;i++){
+          
+          const isSamePass = compare(newUser.password, allUsers[i].toJSON().password);
+
+          comparePasswords.push(isSamePass);
+
+          
+          
+        }
+
+     
+        
+
+        
+      // it doesn't compare the passwords. you're able to put wrong passwords in CHECK THIS PLEASE
+
+      
+        if (comparePasswords.some(match => match)) {
+          
+          return null;
+        }
+
+      
+
+      
+        let resultadoFinal: UserSessionToken | null;
+        
+      if (newUser.name === 'Anonim'){
+        resultadoFinal = await mySqlPlayer.sync({alter:true}).then(()=>{
+
+          const newPlayer = mySqlPlayer.build({ name: null, password: hashPassword});
+  
+          return newPlayer.save();
+  
+        
+          })
+          .then((data)=>{
+            const token = jwt.sign({ id: data.toJSON().id.toString(), name: data.toJSON().name }, secret, {
+              expiresIn: '2 days',
+            })
+  
+            return { id: data.toJSON().id, name: data.toJSON().name, token: token };
+  
+          })
+          .catch((err)=>{
+            return null;
+          })
+      }else{
+        resultadoFinal = await mySqlPlayer.sync({alter:true}).then(()=>{
+
+          const newPlayer = mySqlPlayer.build({ name: newUser.name, password: hashPassword});
+  
+          return newPlayer.save();
+  
+        
+          })
+          .then((data)=>{
+            const token = jwt.sign({ id: data.toJSON().id.toString(), name: data.toJSON().name }, secret, {
+              expiresIn: '2 days',
+            })
+  
+            return { id: data.toJSON().id, name: data.toJSON().name, token: token };
+  
+          })
+          .catch((err)=>{
+            return null;
+          })
       }
       console.log('true');
       await mySqlPlayer.sync({alter:true}).then(()=>{
@@ -32,18 +132,23 @@ export class mySqlGameRepository implements GameRepository {
       return true;
     }
   
-    async postUserLogin(newUser: Player): Promise<Player | null> {
-      const isNameRegistered = await mySqlPlayer.sync().then(()=>{
-        return mySqlPlayer.findOne({
+
+    async postUserLogin(newUser: Player): Promise<UserSessionToken | null> {
+
+      let isNameRegistered = await mySqlPlayer.sync().then(()=>{
+          return mySqlPlayer.findAll({
+              where: {
+                  name: newUser.name
+                }
+         }); 
+        });
+
+      if (isNameRegistered && newUser.name === 'Anonim') {
+         let allAnonimUsers = await mySqlPlayer.sync().then(()=>{
+        return mySqlPlayer.findAll({
             where: {
-                player_name: newUser.name
-              }
-       }); 
-      });
-      const isPassRegistered = await mySqlPlayer.sync().then(()=>{
-        return mySqlPlayer.findOne({
-            where: {
-                player_password: newUser.password
+                name: null
+
               }
        }); 
       });
@@ -58,8 +163,36 @@ export class mySqlGameRepository implements GameRepository {
 
 
 
+        const isUserRegistered = allAnonimUsers.find(objeto => compare(newUser.password, objeto.toJSON().password))
+        if (isUserRegistered) {
+          const token = jwt.sign({ id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().name }, secret, {
+            expiresIn: '2 days',
+          })
+          return { id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().name, token: token }
+        } else {
+          
+          return null;
+        }  
+
+     } else if (isNameRegistered){
+      const isUserRegistered = isNameRegistered.find(objeto => compare(newUser.password, objeto.toJSON().password))
+
+        if (isUserRegistered) {
+          const token = jwt.sign({ id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().name }, secret, {
+            expiresIn: '2 days',
+          })
+          return { id: isUserRegistered.toJSON().id, name: isUserRegistered.toJSON().name, token: token }
+        } else {
+         
+          return null;
+        }  
 
 
+     } else {
+        
+        return null;
+      }
+    }
 
 
 
@@ -68,9 +201,9 @@ export class mySqlGameRepository implements GameRepository {
             return mySqlPlayer.findOne({
           
               attributes:[
-                'player_name', 'success_rate'
+                'name', 'success_rate'
               ],
-              group: ['player_name', 'success_rate'],
+              group: ['name', 'success_rate'],
               order:[
                 [sequelizeConnection.fn('max', sequelizeConnection.col('success_rate')), 'DESC'],
               ]
@@ -78,20 +211,17 @@ export class mySqlGameRepository implements GameRepository {
           }).then((data)=>{
 
 
-            if (data?.toJSON().player_name === null){
-              return `The highest winner is Anonim with a score of ${data?.toJSON().success_rate}`;
-            }else{
-              return `The highest winner is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
-            }
+            return data
+
            
 
            }) 
         
         if (maxWinnerFunc) {
-          console.log(`success, ${maxWinnerFunc}`);
+
           return maxWinnerFunc;
         } else {
-          console.log('try  again');
+          
           return null;
         }
       }
@@ -101,9 +231,9 @@ export class mySqlGameRepository implements GameRepository {
             return mySqlPlayer.findOne({
           
               attributes:[
-                'player_name', 'success_rate'
+                'name', 'success_rate'
               ],
-              group: ['player_name', 'success_rate'],
+              group: ['name', 'success_rate'],
               order:[
                 [sequelizeConnection.fn('max', sequelizeConnection.col('success_rate')), 'ASC'],
               ]
@@ -111,19 +241,16 @@ export class mySqlGameRepository implements GameRepository {
           }).then((data)=>{
 
 
-            if (data?.toJSON().player_name === null){
-              return `The lowest loser is Anonim with a score of ${data?.toJSON().success_rate}`;
-            }else{
-              return `The lowest loser is ${data?.toJSON().player_name} with a score of ${data?.toJSON().success_rate}`;
-            }
+            return data
+
 
            }) 
         
         if (minLoserFunc) {
-          console.log(`success, ${minLoserFunc}`);
+
           return minLoserFunc;
         } else {
-          console.log('try  again');
+          
           return null;
         }
       }
@@ -133,9 +260,9 @@ export class mySqlGameRepository implements GameRepository {
             return mySqlPlayer.findAll({
           
               attributes:[
-                'player_name', 'success_rate'
+                'name', 'success_rate'
               ],
-              group: ['player_name', 'success_rate'],
+              group: ['name', 'success_rate'],
               order:[
                 [sequelizeConnection.fn('max', sequelizeConnection.col('success_rate')), 'DESC'],
               ]
@@ -143,7 +270,14 @@ export class mySqlGameRepository implements GameRepository {
           }).then((data)=>{
             let listingText = '';
             data.forEach((element)=>{
-              listingText += `${element.toJSON().player_name} has a success rate of ${element.toJSON().success_rate}\n`;
+
+              if (element.toJSON().name === null){
+                listingText += `Anonim has a success rate of ${element.toJSON().success_rate}\n`;
+              }else{
+                listingText += `${element.toJSON().name} has a success rate of ${element.toJSON().success_rate}\n`;
+              }
+              
+
             })
             return listingText;
           });
@@ -162,8 +296,10 @@ export class mySqlGameRepository implements GameRepository {
       });
         
         if (ratesListFunc && totalAvg) {
-            let finalText = `success, ${ratesListFunc}, ${totalAvg}`;
-          console.log(`success, ${ratesListFunc}, ${totalAvg}`);
+
+            let finalText = `${ratesListFunc}${totalAvg}`;
+          
+
           return finalText;
         } else {
           console.log('try  again');
@@ -185,13 +321,19 @@ export class mySqlGameRepository implements GameRepository {
         const allPlayersRatingsFunc = await mySqlPlayer.sync().then(()=>{
           return mySqlPlayer.findAll({
            attributes: {
-             exclude: ['player_password']
+             exclude: ['password']
            }
          }); 
         }).then((data)=>{
           let finalText = '';
           data.forEach((element)=>{
-            finalText += `Player name: ${element.toJSON().player_name}\n
+
+            if (element.toJSON().name === null){
+              finalText += `Player name: Anonim\n
+              Success rate: ${element.toJSON().success_rate}\n`
+            }else{
+              finalText += `Player name: ${element.toJSON().name}\n
+
             Success rate: ${element.toJSON().success_rate}\n`
           })
           return finalText
@@ -200,19 +342,19 @@ export class mySqlGameRepository implements GameRepository {
         
         if (allPlayersRatingsFunc) {
             
-          console.log(`success, ${allPlayersRatingsFunc}`);
+
           return allPlayersRatingsFunc;
         } else {
-          console.log('try  again');
+          
           return null;
         }
       }
 
-      
+ 
 
 
+      async modifyPlayerName(playerId: string, newName: string): Promise<boolean> {
 
-      async modifyPlayerName(newUser: Player, newName: string): Promise<boolean> {
         const isRegistered = await mySqlPlayer.sync().then(()=>{
           return mySqlPlayer.findOne({
               where: {
@@ -226,7 +368,7 @@ export class mySqlGameRepository implements GameRepository {
         }
         console.log('name changed');
         await mySqlPlayer.sync({alter:true}).then(()=>{
-          mySqlPlayer.update({ player_name: newName }, {
+          mySqlPlayer.update({ name: newName }, {
            where: {
              player_name: newUser.name
            }
@@ -236,37 +378,43 @@ export class mySqlGameRepository implements GameRepository {
       }
 
 
-      
+    
 
-
-
-
-      async playGame(playerId: number): Promise<boolean> {
+      async playGame(playerId: number): Promise<object | null> {
         
         let didItWork = false;
+
+        let finalGame = {dice_1:0, dice_2:0, winOrLose:false};
        
         await mySqlGame.sync({alter:true}).then(()=>{
 
          
 
-          let dice1Random = Math.floor(Math.random() * 7);
-          let dice2Random = Math.floor(Math.random() * 7);
+          const dice1Random = Math.floor(Math.random() * 6) + 1;
+          const dice2Random = Math.floor(Math.random() * 6) + 1;
 
           let resultOfGame = false;
+
+          finalGame.dice_1 = dice1Random;
+          finalGame.dice_2 = dice2Random;
+          
+          
 
           if (dice1Random+dice2Random === 7){
             resultOfGame = true;
           }
+
+          finalGame.winOrLose = resultOfGame;
     
           const newGame = mySqlGame.build({ player_id: playerId, dice_1: dice1Random, dice_2: dice2Random, winOrLose: resultOfGame});
           return newGame.save();
           }).then(()=>{
           
-          console.log("New game added to database!");
+          
           didItWork = true;
           })
-          .catch(()=>{
-          console.log('Error syncing table and model for GAMES.')
+          .catch((err)=>{
+            throw err;
           });
 
           let totalLosses = 0;
@@ -324,11 +472,8 @@ export class mySqlGameRepository implements GameRepository {
          })
 
           
-        return didItWork;
+        return finalGame;
       }
-
-
-
 
 
       async deleteAllGamesFromPlayer(playerId: number): Promise<boolean> {
@@ -343,11 +488,11 @@ export class mySqlGameRepository implements GameRepository {
            
        }).then(()=>{
           
-        console.log("All games deleted!");
+       
         didItWork = true;
         })
-        .catch(()=>{
-        console.log('Error deleting games.')
+        .catch((err)=>{
+        throw err;
         });
 
           
@@ -357,9 +502,9 @@ export class mySqlGameRepository implements GameRepository {
 
 
 
-      async listAllGamesFromPlayer(playerId: number): Promise<string | null> {
+      async listAllGamesFromPlayer(playerId: string): Promise<object[] | null> {
         
-        let finalList = '';
+        let finalList: object[] = [];
        
         await mySqlGame.sync().then(()=>{
           return mySqlGame.findAll({
@@ -368,10 +513,7 @@ export class mySqlGameRepository implements GameRepository {
         }).then((data)=>{
          
           data.forEach((element, index)=>{
-            finalList += `GAME NUMBER ${index+1}\n\n
-            Dice 1: ${element.toJSON().dice_1}\n
-            Dice 2: ${element.toJSON().dice_2}\n
-            Was it a win? ${element.toJSON().winOrLose}\n\n\n`
+            finalList.push(element)
           })
           
         });

@@ -44,7 +44,7 @@ export class UseCases {
     return modifyName;
   }
 
-  async playGame(playerId: number): Promise<Game | null> {
+  async playGame(playerId: number): Promise<object | null> {
     const play = await this.gameRepository.playGame(playerId);
     return play;
   }

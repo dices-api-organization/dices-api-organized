@@ -10,7 +10,9 @@ findMaxWinner(): Promise<object | null>;
   ratesListing(): Promise<Player[] | null>;
   allPlayersAndRatings(): Promise< Player[] | null>;
   modifyPlayerName(playerId: string, newName: string): Promise<boolean>;
-  playGame(playerId: number): Promise<Game | null>;
+
+  playGame(playerId: number): Promise<object | null>;
   deleteAllGamesFromPlayer(playerId: number): Promise<Player | null>;
+
   listAllGamesFromPlayer(playerId: string): Promise<object[] | null>;
 }
