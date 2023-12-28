@@ -12,13 +12,16 @@ export const SelectBD = () => {
         navigate(path);
 }
     const handleButtonMongoDB = () => {
-        fetch('http://localhost:3000/mongodb', 
+        fetch('http://localhost:3000/configdb', 
             {
-                method: 'GET',
+                method: 'POST',
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                body: JSON.stringify({
+                    flag: 'mongodb'
+                  })
             })
             .then((response) => {
                 if (!response.ok){
@@ -34,19 +37,22 @@ export const SelectBD = () => {
         routeChange(`login`)
     }
     const handleButtonMySQL = () => {
-        fetch('http://localhost:3000/mysql', 
+        fetch('http://localhost:3000/configdb', 
             {
-                method: 'GET',
+                method: 'POST',
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                body: JSON.stringify({
+                    flag: 'mysql'
+                  })
             })
             .then((response) => {
                 if (!response.ok){
                   throw new Error('Response was not ok')
                 }
-                setErr('Switching to MongoDB..')
+                setErr('Switching to MySQL..')
                 return response.json()
               })
               .catch(function (error) {
