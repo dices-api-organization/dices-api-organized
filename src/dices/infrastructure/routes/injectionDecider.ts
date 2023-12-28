@@ -1,19 +1,14 @@
-
-
-const flag = 'mysql';
-
-
-
-// Need flag
-
+import dotenv from 'dotenv';
 import { UseCases } from '../../application/UseCases';
 
+dotenv.config()
 let finalUseCases: UseCases;
 
+const dataBaseChoice = process.env.DATABASE ?? ' error'
 
- if (flag === 'mysql') {
+ if (dataBaseChoice === 'mysql') {
    finalUseCases = require('../sqlDependenyInjection').useCases;
- } else if (flag === 'mongodb') {
+ } else if (dataBaseChoice === 'mongodb') {
 finalUseCases = require('../mongoDependencyInjection').useCases;
 }
 
