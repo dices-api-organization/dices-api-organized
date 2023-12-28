@@ -21,5 +21,5 @@ dicesRouter.post('/play/throw', postPlayGameController);
 dicesRouter.get('/play/rates', getRatesListingController);
 dicesRouter.get('/play/players', getPlayersAndRatingsController);
 dicesRouter.get('/play/games/:id', getAllGamesController);
-//dicesRouter.get('/play/min', getMinLoserController);
-//dicesRouter.get('/play/max', getMaxWinnerController);
+dicesRouter.get('/play/min', getMinLoserController);
+dicesRouter.get('/play/max', getMaxWinnerController);
