@@ -279,8 +279,7 @@ const handleMinLoser = () => {
 
     return(
         <>
-            {id != '' && <h4>id: {id} </h4>}
-            {savedToken && <h4 className="token">token: {savedToken} </h4>}
+            
             {dice1 !== 0 && <h3>Dice 1: <span>{dice1} </span></h3>}
             {dice2 !== 0 && <h3>Dice 2: <span>{dice2}</span></h3>}
             {dice1 + dice2 == 7 && <h1><span>You win!!</span></h1>}
