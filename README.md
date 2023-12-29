@@ -4,15 +4,17 @@
 
 This project corresponds to Sprint 6 of Dices API. It is an API that manages players and games of a dice game. The implemented functionalities are detailed below:
 
-   - POST /players: Creates a player.
-   - PUT /players/{id}: Modifies the name of the player.
-   - GET /players: Returns the list of all players in the system with their success percentage.
-   - POST /games/{id}: A specific player makes a move.
-   - DELETE /games/{id}: Deletes the moves of the player.
-   - GET /games/{id}: Returns the list of moves for a player.
-   - GET /ranking: Returns a ranking of players ordered by success percentage and the average success percentage of all players.
-   - GET /ranking/loser: Returns the player with the worst success percentage.
-   - GET /ranking/winner: Returns the player with the best success percentage.
+   - POST /userRegister: Register a player.
+   - POST /userLogin: Login as a player.
+
+   - PUT /play/update: Change player's name.
+   - DELETE /play/delete: Delete a player's dice throws.
+   - POST /play/throw: Play a game as your logged in player.
+   - GET /play/players: Get list of all players and their ratings.
+   - GET /play/rates: Get ranking of best players, and overall ranking amongst players.
+   - GET /play/games/:id: Get a list of your logged in player's games.
+   - GET /play/min: Get the best player.
+   - GET /play/max: Get the worst player.
 
 ### 📥 Installation
 
