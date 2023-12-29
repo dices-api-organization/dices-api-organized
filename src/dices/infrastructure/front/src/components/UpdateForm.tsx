@@ -52,8 +52,7 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 }
  return(
     <>
-        <p>{savedToken}</p>
-        <p>{id}</p>
+        
         <div className="subHeader">
             <h3>Change yor name</h3>
         </div>

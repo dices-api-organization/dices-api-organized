@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { HeaderUser } from "./HeaderUser";
 
 
 export const RegisterForm = ({ setUserId }: { setUserId: React.Dispatch<React.SetStateAction<string>> }) => {
@@ -68,7 +69,7 @@ const[id, setId] = useState('')
          </section>
          <div className="resultLogin">
             {error && <p>Change your name or password!</p>}
-            {success && <p>Wellcome <span>{name}</span> !!! to the best dices game !</p>}
+            {success && <p>Wellcome <span>{name ? name : 'Anonim'}</span> !!! to the best dices game !</p>}
             
          </div>
     </>
