@@ -26,12 +26,12 @@ export class UseCases {
     return findLoser;
   }
 
-  async ratesListing(): Promise<Player[] | null> {
+  async ratesListing(): Promise<object[] | null> {
     const ratesListing = await this.gameRepository.ratesListing();
     return ratesListing;
   }
 
-  async allPlayersAndRatings(): Promise< Player[] | null> {
+  async allPlayersAndRatings(): Promise<object[] | null> {
     const playersRatings = await this.gameRepository.allPlayersAndRatings();
     return playersRatings;
   }
@@ -49,7 +49,7 @@ export class UseCases {
     return play;
   }
 
-  async deleteAllGamesFromPlayer(playerId: number): Promise<Player | null> {
+  async deleteAllGamesFromPlayer(playerId: number): Promise<boolean> {
     const deleteAllGames =
       await this.gameRepository.deleteAllGamesFromPlayer(playerId);
     return deleteAllGames;
