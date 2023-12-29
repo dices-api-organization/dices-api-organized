@@ -30,5 +30,7 @@ dicesRouter.get('/play/games/:id', getAllGamesController);
 
 
 
+
 dicesRouter.get('/play/min', getMinLoserController);
 dicesRouter.get('/play/max', getMaxWinnerController);
+
