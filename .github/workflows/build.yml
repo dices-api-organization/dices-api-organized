@@ -4,7 +4,7 @@ name: Deployment Pipeline
 on:
     push:
         branches:
-            - docker
+            - main
 
 jobs:
     deploy:
