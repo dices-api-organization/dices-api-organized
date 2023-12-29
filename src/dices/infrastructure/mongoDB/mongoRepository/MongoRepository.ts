@@ -6,30 +6,40 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { UserSessionToken } from '../../../domain/entities/UserSessionToken';
 
-dotenv.config()
+dotenv.config();
 
 const secret = process.env.SECRET_KEY ?? 'sin secretos';
 
 import { userSchemaInterface } from '../mongoModel/UserSchema';
 
 import { Aggregate } from 'mongoose';
-
+import { Game } from '../../../domain/entities/Game';
 
 export class MongoGameRepository implements GameRepository {
-
   async postNewUser(newUser: Player): Promise<UserSessionToken | null> {
     const hashPassword = await encrypt(newUser.password);
 
     const isRegistered = await UserModel.find({ name: newUser.name });
 
-    const comparePasswords = await Promise.all(
-      isRegistered.map(async (user: { password: string }) => {
+    if (newUser.name !== 'Anonim'){
+
+      let doesUserExist = isRegistered.find((element) => element.name == newUser.name);
+
+      if (doesUserExist){
+        return null;
+      }
+    }
+
+    const allUsers = await UserModel.find({ });
+
+    const comparePasswords: boolean[] = await Promise.all(
+      allUsers.map(async (user: { password: string }) => {
         const isSamePass = compare(newUser.password, user.password);
         return isSamePass;
       })
     );
 
-    if (comparePasswords.some(match => match)) {
+    if (comparePasswords.some((match) => match)) {
       console.log('Login please!! There is a user with your credentials');
       return null;
     } else {
@@ -43,24 +53,35 @@ export class MongoGameRepository implements GameRepository {
       const token = jwt.sign({ id: createdUser._id.toString(), name: createdUser.name }, secret, {
         expiresIn: '2 days',
       })
+      
       console.log(token)
       return { id: createdUser.id, name: createdUser.name, token: token };
     }
   }
 
   async postUserLogin(newUser: Player): Promise<UserSessionToken | null> {
-    const hashPassword = await encrypt(newUser.password);
 
     const isNameRegistered = await UserModel.find({ name: newUser.name });
 
     if (isNameRegistered) {
-      const isUserRegistered = isNameRegistered.find(objeto => compare(newUser.password, objeto.password))
+      const isUserRegistered = isNameRegistered.find((objeto) =>
+        compare(newUser.password, objeto.password)
+      );
 
       if (isUserRegistered) {
-        const token = jwt.sign({ id: isUserRegistered.id, name: isUserRegistered.name }, secret, {
-          expiresIn: '2 days',
-        })
-        return { id: isUserRegistered.id, name: isUserRegistered.name, token: token }
+        const token = jwt.sign(
+          { id: isUserRegistered.id, name: isUserRegistered.name },
+          secret,
+          {
+            expiresIn: '2 days'
+          }
+        );
+        console.log(token);
+        return {
+          id: isUserRegistered.id,
+          name: isUserRegistered.name,
+          token: token
+        };
       } else {
         console.log('User not found');
         return null;
@@ -71,26 +92,28 @@ export class MongoGameRepository implements GameRepository {
     }
   }
 
-  async findMaxWinner(): Promise<string | null>{
-    const maxWinner: userSchemaInterface | null = await UserModel.findOne().sort({success_rate:-1}).limit(1)
+  async findMaxWinner(): Promise<object | null> {
+    const maxWinner: userSchemaInterface | null = await UserModel.findOne()
+      .sort({ success_rate: -1 })
+      .limit(1);
 
     if (!maxWinner) {
       return null;
     }
 
-    return `Player ${maxWinner.name} is the highest winner, with a score of ${maxWinner.success_rate}`;
-
+    return maxWinner;
   }
 
-  async findMinLoser(): Promise<string | null>{
-    const minLoser: userSchemaInterface | null = await UserModel.findOne().sort({success_rate:-1}).limit(1)
+  async findMinLoser(): Promise<object | null> {
+    const minLoser: userSchemaInterface | null = await UserModel.findOne()
+      .sort({ success_rate: 1 })
+      .limit(1);
 
     if (!minLoser) {
       return null;
     }
 
-    return `Player ${minLoser.name} is the lowest loser, with a score of ${minLoser.success_rate}`;
-
+    return minLoser;
   }
 
   async ratesListing(): Promise<string | null>{
@@ -107,7 +130,8 @@ export class MongoGameRepository implements GameRepository {
 
     // Now find total average of all players
 
-    let allPlayers: Array<userSchemaInterface> | null = await UserModel.find()
+    const allPlayers: Array<userSchemaInterface> | null =
+      await UserModel.find();
 
     let allSuccessRates: Array<number> = [];
 
@@ -116,7 +140,6 @@ export class MongoGameRepository implements GameRepository {
         
         allSuccessRates.push(element.success_rate);
       }
-      
     });
 
     let totalSum: number = 0;
@@ -129,17 +152,16 @@ export class MongoGameRepository implements GameRepository {
       }
     }
 
-    let totalAverage = totalSum / allSuccessRates.length;
+    const totalAverage = totalSum / allSuccessRates.length;
 
-    listingText += `\nAnd finally, the total average for all players is: ${totalAverage}`;
-
+    listingText += `\nAnd finally, the total average for all players is: ${totalAverage?.toFixed(2)}`;
 
     return listingText;
-
   }
 
-  async allPlayersAndRatings(): Promise<string | null>{
-    const allPlayers: Array<userSchemaInterface> | null = await UserModel.find();
+  async allPlayersAndRatings(): Promise<string | null> {
+    const allPlayers: Array<userSchemaInterface> | null =
+      await UserModel.find();
 
     if (!allPlayers) {
       return null;
@@ -151,74 +173,92 @@ export class MongoGameRepository implements GameRepository {
     })
     return playersList;
 
-
   }
 
-  async modifyPlayerName(playerId: number, newName: string): Promise<boolean>{
-
-    const modifiedPlayer: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{name: newName}});
-
+  async modifyPlayerName(playerId: string, newName: string): Promise<boolean> {
+    const modifiedPlayer: userSchemaInterface | null =
+      await UserModel.findOneAndUpdate(
+        { _id: playerId },
+        { $set: { name: newName } }
+      );
     if (!modifiedPlayer) {
       return false;
     }
 
-  
     return true;
-
-
   }
 
-  async playGame(playerId: number): Promise<boolean>{
-
-
+  async playGame(playerId: number): Promise<Game | null> {
     //Obtain our current player for future use
 
-    let currentPlayer: userSchemaInterface | null = await UserModel.findOne({_id: playerId});
+    const currentPlayer: userSchemaInterface | null = await UserModel.findOne({
+      _id: playerId
+    });
 
     if (!currentPlayer) {
       // Game could not be played, false!
-      return false;
+      return null;
     }
 
     // How many games have they played
 
-    let numOfGames = currentPlayer.num_of_games;
+    const numOfGames = currentPlayer.num_of_games;
 
     // Find how many wins they have
-   
+
     let numOfWins = currentPlayer.num_of_wins;
 
     // Establish updated numbers of games and wins, for possible future use
-    let updateNumOfGames = numOfGames + 1;
+    const updateNumOfGames = numOfGames + 1;
 
     // Update player's played games number
 
-    const modifyNumOfGames: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{num_of_games: updateNumOfGames}});
+    const modifyNumOfGames: userSchemaInterface | null =
+      await UserModel.findOneAndUpdate(
+        { _id: playerId },
+        { $set: { num_of_games: updateNumOfGames } }
+      );
 
     // Finally, play our game
-      let dice1Random = Math.floor(Math.random() * 7);
-      let dice2Random = Math.floor(Math.random() * 7);
+    const dice1Random = Math.floor(Math.random() * 6) + 1;
+    const dice2Random = Math.floor(Math.random() * 6) + 1;
 
-      let resultOfGame = false;
+    let resultOfGame = false;
 
-    
-      if (dice1Random+dice2Random === 7){
-        resultOfGame = true;
-        numOfWins = numOfWins + 1;
+    if (dice1Random + dice2Random === 7) {
+      resultOfGame = true;
+      numOfWins = numOfWins + 1;
 
-        const modifyNumOfWins: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{num_of_wins: numOfWins}});
+      const modifyNumOfWins: userSchemaInterface | null =
+        await UserModel.findOneAndUpdate(
+          { _id: playerId },
+          { $set: { num_of_wins: numOfWins } }
+        );
+    }
 
+    // Finding AVG success
+    const playerSuccessRate = (numOfWins / updateNumOfGames) * 100;
+
+    const addNewGame = await UserModel.findOneAndUpdate(
+      { _id: playerId },
+      {
+        $push: {
+          games: {
+            dice_1: dice1Random,
+            dice_2: dice2Random,
+            winOrLose: resultOfGame
+          }
+        }
       }
 
-      // Finding AVG success
-    let playerSuccessRate = (numOfWins / updateNumOfGames)*100;
-
-      const addNewGame = await UserModel.findOneAndUpdate({_id: playerId}, {$push:{games: {dice_1: dice1Random, dice_2: dice2Random, winOrLose: resultOfGame}}});
-
-      const modifyRateOfSuccess: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{success_rate: playerSuccessRate}});
-
-      // Game could be played, so true!
-    return true;
+    );
+    const modifyRateOfSuccess: userSchemaInterface | null =
+      await UserModel.findOneAndUpdate(
+        { _id: playerId },
+        { $set: { success_rate: playerSuccessRate } }
+      );
+    // Game could be played, so true!
+    return { diceThrow1: dice1Random, diceThrow2: dice2Random };
 
   }
 
@@ -240,30 +280,28 @@ export class MongoGameRepository implements GameRepository {
 
   }
 
-  async listAllGamesFromPlayer(playerId: number): Promise<string | null>{
-    let currentPlayer: userSchemaInterface | null = await UserModel.findOne({_id: playerId});
+
+  async listAllGamesFromPlayer(playerId: string): Promise<object[] | null> {
+    const currentPlayer: userSchemaInterface | null = await UserModel.findOne({
+      _id: playerId
+    });
 
     if (!currentPlayer) {
       return null;
     }
 
-    let playersGames = currentPlayer.games;
-    let playersGamesList = '';
+    const playersGames = currentPlayer.games;
+    let playersGamesList: object[] = [];
 
     if (typeof playersGames === 'undefined') {
-
-      playersGamesList = 'This player has no games!'
-      return playersGamesList;
+      
+      return null;
     }
 
-    
-    playersGames.forEach((element)=>{
-      playersGamesList += `${element}\n`;
-    })
+    playersGames.forEach((element) => {
+      
+      playersGamesList.push(element)
+    });
     return playersGamesList;
-    
   }
-
-
 }
-

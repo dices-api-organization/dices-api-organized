@@ -13,7 +13,7 @@ export const postUserLoginController = async (req: Request, res: Response) => {
       if (value) res.status(200).send(value);
       else res.status(404).send(value);
     })
-    .catch((error) => {
+    .catch((error: any) => {
       console.log(error);
     });
   } catch (err) {
