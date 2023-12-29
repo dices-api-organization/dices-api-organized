@@ -1,17 +1,12 @@
-
-let flag = 'mongodb';
-
-
-// Need flag
-
+import { nameDB } from '../mongoDB/mongoConnectionDB';
 import { UseCases } from '../../application/UseCases';
 
 let finalUseCases: UseCases;
 
 
- if (flag === 'mysql') {
+ if (nameDB === 'mysql') {
    finalUseCases = require('../sqlDependenyInjection').useCases;
- } else if (flag === 'mongodb') {
+ } else if (nameDB === 'mongodb') {
 finalUseCases = require('../mongoDependencyInjection').useCases;
 }
 
