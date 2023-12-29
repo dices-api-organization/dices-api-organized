@@ -26,12 +26,12 @@ export class UseCases {
     return findLoser;
   }
 
-  async ratesListing(): Promise<string | null> {
+  async ratesListing(): Promise<object[] | null> {
     const ratesListing = await this.gameRepository.ratesListing();
     return ratesListing;
   }
 
-  async allPlayersAndRatings(): Promise<string | null> {
+  async allPlayersAndRatings(): Promise<object[] | null> {
     const playersRatings = await this.gameRepository.allPlayersAndRatings();
     return playersRatings;
   }

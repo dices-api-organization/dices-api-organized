@@ -7,8 +7,8 @@ export interface GameRepository {
   postUserLogin(newUser: Player): Promise<UserSessionToken | null>;
   findMaxWinner(): Promise<object | null>;
   findMinLoser(): Promise<object | null>;
-  ratesListing(): Promise<string | null>;
-  allPlayersAndRatings(): Promise<string | null>;
+  ratesListing(): Promise<object[] | null>;
+  allPlayersAndRatings(): Promise<object[] | null>;
   modifyPlayerName(playerId: string, newName: string): Promise<boolean>;
   playGame(playerId: number): Promise<object | null>;
   deleteAllGamesFromPlayer(playerId: number): Promise<boolean>;

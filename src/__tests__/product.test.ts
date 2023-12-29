@@ -122,8 +122,8 @@ describe('product',()=>{
                         
 
 
-                    await supertest(app).post('/play')
-                    .send({_id:ourData?.toJSON()._id})
+                    await supertest(app).post('/play/throw')
+                    .send({id:ourData?.toJSON()._id})
                     .expect(200);
                 
                 })
@@ -171,8 +171,10 @@ describe('product',()=>{
 
         const ourData = await UserModel.findOne({ name: 'testName' });
 
-        await supertest(app).get('/play/games')
-        .send({_id:ourData?.toJSON()._id})
+        let idArg = ourData?.toJSON()._id;
+
+        await supertest(app).get(`/play/games/${idArg}`)
+       
         .expect(200);
     
     })
@@ -197,7 +199,7 @@ describe('product',()=>{
 
         const ourData = await UserModel.findOne({ name: 'testName' });
 
-        await supertest(app).delete('/update/delete')
+        await supertest(app).delete('/play/delete')
         .send({_id:ourData?.toJSON()._id})
         .expect(200);
     
@@ -211,8 +213,8 @@ describe('product',()=>{
 
         const ourData = await UserModel.findOne({ name: 'testName' });
 
-        await supertest(app).put('/update')
-        .send({_id:ourData?.toJSON()._id, name:'newName'})
+        await supertest(app).put('/play/update')
+        .send({id:ourData?.toJSON()._id, name:'newName'})
         .expect(200);
     
     })

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { rateOfPlayers } from "./rateOfPlayers";
 
 export const Play = ({ id }: { id: string }) => {
 
@@ -15,6 +16,8 @@ export const Play = ({ id }: { id: string }) => {
     const [err, setErr] = useState('')
 
     const [success, setSuccess] = useState('')
+    const [successArr, setSuccessArr] = useState([])
+    const [rank, setRank] = useState([])
    const userId = id
 
     const [successArrThrows, setSuccessArrThrows] = useState([])
@@ -24,6 +27,7 @@ export const Play = ({ id }: { id: string }) => {
     const [loserRate, setLoserRate] = useState<string>('')
     const [successWin, setSuccessWin] = useState<boolean>(false)
     const [successLose, setSuccessLose] = useState<boolean>(false)
+    
 
     const savedToken = localStorage.getItem('token')
     const handlePlay = async () => {
@@ -58,40 +62,108 @@ export const Play = ({ id }: { id: string }) => {
               })
     }
     const handleUpdate = () => {
-        setErr('')
-        setSuccess('')
-        routeChange('../play/update', id)
-    }
-    const handleDelete = () => {
-        setErr('')
-        setSuccess('')
-        fetch('http://localhost:3000/play/delete', 
-            {
-                method: 'DELETE',
-                mode: 'cors',
-                headers: {
-                    'Authorization': `Bearer ${savedToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id:id,
-                })
+      setErr('')
+      setSuccess('')
+      setRank([])
+      setDice1(0)
+      setDice2(0)
+      routeChange('../play/update', id)
+  }
+  const handleDelete = () => {
+    setErr('')
+    setSuccess('')
+    fetch('http://localhost:3000/play/delete', 
+        {
+            method: 'DELETE',
+            mode: 'cors',
+            headers: {
+                'Authorization': `Bearer ${savedToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id:id,
             })
-            .then((response) => {
-                if (!response.ok){
-                  throw new Error('The user wasn\'t deleted. An error occurred')
-                }
-                return response.json()
-              })
-              .then((data) => {
-                console.log(data.ok)
-                setSuccess('The user was deleted succesfully!')
-              })
-              .catch(function (error) {
-                setErr("Fetch problems:" + error.message)
-                console.log("Fetch problems: " + error.message);
-              })
-    }
+        })
+        .then((response) => {
+            if (!response.ok){
+              throw new Error('The user\'s throws weren\'t deleted. An error occurred')
+            }
+            return response.json()
+          })
+          .then((data) => {
+            console.log(data.ok)
+            setSuccess('The user\'s throws were deleted succesfully!')
+          })
+          .catch(function (error) {
+            setErr("Fetch problems:" + error.message)
+            console.log("Fetch problems: " + error.message);
+          })
+}
+
+const handlePlayers = () => {
+  setErr('')
+  setSuccess('')
+  setSuccessArr([])
+  setRank([])
+  setDice1(0)
+  setDice2(0)
+  fetch('http://localhost:3000/play/players', 
+        {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Authorization': `Bearer ${savedToken}`,
+                'Content-Type': 'application/json'
+            },
+          
+        })
+        .then((response) => {
+            if (!response.ok){
+              throw new Error('Response list of players were not ok')
+            }
+            return response.json()
+          })
+          .then((data) => {
+            setSuccessArr(data)                
+          })
+          .catch(function (error) {
+            setErr("Fetch problems:" + error.message)
+            console.log("Fetch problems: " + error.message);
+          })
+}
+
+const handleRates = () =>{
+  setErr('')
+  setSuccess('')
+  setSuccessArr([])
+  setRank([])
+  setDice1(0)
+  setDice2(0)
+  fetch(`http://localhost:3000/play/rates`, 
+        {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Authorization': `Bearer ${savedToken}`,
+                'Content-Type': 'application/json'
+            },
+          
+        })
+        .then((response) => {
+            if (!response.ok){
+              throw new Error('Response list of players were not ok')
+            }
+            return response.json()
+          })
+          .then((data) => {
+            setRank(data)      
+            setSuccess(`The total average of all players are  ${rateOfPlayers(data)}`)
+          })
+          .catch(function (error) {
+            setErr("Fetch problems:" + error.message)
+            console.log("Fetch problems: " + error.message);
+          })
+}
 
     const handleListThrows = () => {
       setErr('')
@@ -218,21 +290,28 @@ const handleMinLoser = () => {
                <p ><span>DICE 1:</span> {value.dice_1} <span>DICE 2:</span> {value.dice_2} <span>WIN OR LOSE?</span> {value.winOrLose ? 'WIN!' : 'LOSE!'}</p>
              ))}
 
-              {successWin && <p>The max winner is <span>{winnerName}</span> with a success rate of <span>{winnerRate}</span></p>}
+              {successWin && <p>The max winner is <span>{winnerName ? winnerName : 'Anonim'}</span> with a success rate of <span>{winnerRate}</span></p>}
 
-              {successLose && <p>The min loser is <span>{loserName}</span> with a success rate of <span>{loserRate}</span></p>}
+              {successLose && <p>The min loser is <span>{loserName ? loserName : 'Anonim'}</span> with a success rate of <span>{loserRate}</span></p>}
            
             <nav>
                 <button onClick={handlePlay}>Play</button>
                 <button onClick={handleUpdate}>Update</button>
-                <button>Get players</button>
-                <button onClick={handleDelete}>Delete throw</button>
-                <button onClick={handleListThrows}>Get lis of throws</button>
+                <button onClick={handlePlayers}>Get players</button>
+                <button onClick={handleDelete}>Delete throws</button>
+                <button onClick={handleRates}>Get the best average players</button>
+                <button onClick={handleListThrows}>Get list of throws</button>
                 <button onClick={handleMaxWinner}>Get max winner</button>
                 <button onClick={handleMinLoser}>Get min loser</button>
             </nav>
-            {success != '' && <p> <span>{success}</span>!</p>}
             {err}
+            {success != '' && <p><span>{success}</span></p>}
+            {successArr.length > 0 && successArr.map((value) => (
+               <p > {`User`} <span>{value.name ? value.name : 'Anonim'}</span> has a success rate of  <span>{value.success_rate}</span></p>
+             ))}
+            {rank.length > 0 && rank.map((value, index) => (
+               <p > {index + 1}º   <span>{value.name ? value.name : 'Anonim'}</span>    has a success rate of    <span>{Math.round(value.success_rate)}</span></p>
+             ))}
         </>
     )
 }

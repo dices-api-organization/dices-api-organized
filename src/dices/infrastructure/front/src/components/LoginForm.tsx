@@ -74,7 +74,7 @@ export const LoginForm = ({ setUserId }: { setUserId: React.Dispatch<React.SetSt
          </div>
          <div className="resultLogin">
             {error && <p>Your name or password are wrong</p>}
-            {success && <p>Hello again <span>{name}</span> !!! Let's play to dices game !</p>}
+            {success && <p>Hello again <span>{name ? name : 'Anonim'}</span> !!! Let's play to dices game !</p>}
 
          </div>
     </>

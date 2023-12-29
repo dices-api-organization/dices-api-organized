@@ -83,7 +83,7 @@ export class mySqlGameRepository implements GameRepository {
         let resultadoFinal: UserSessionToken | null;
         
       if (newUser.name === 'Anonim'){
-        resultadoFinal = await mySqlPlayer.sync({alter:true}).then(()=>{
+        resultadoFinal = await mySqlPlayer.sync({}).then(()=>{
 
           const newPlayer = mySqlPlayer.build({ name: null, password: hashPassword});
   
@@ -103,7 +103,7 @@ export class mySqlGameRepository implements GameRepository {
             return null;
           })
       }else{
-        resultadoFinal = await mySqlPlayer.sync({alter:true}).then(()=>{
+        resultadoFinal = await mySqlPlayer.sync({}).then(()=>{
 
           const newPlayer = mySqlPlayer.build({ name: newUser.name, password: hashPassword});
   
@@ -237,7 +237,7 @@ export class mySqlGameRepository implements GameRepository {
         }
       }
 
-      async ratesListing(): Promise<string | null> {
+      async ratesListing(): Promise<object[] | null> {
         const ratesListFunc = await mySqlPlayer.sync().then(()=>{
             return mySqlPlayer.findAll({
           
@@ -251,19 +251,15 @@ export class mySqlGameRepository implements GameRepository {
             }); 
           }).then((data)=>{
             
-            let listingText = '';
+            let listingArr: object[] = [];
             data.forEach((element)=>{
-              if (element.toJSON().name === null){
-                listingText += `Anonim has a success rate of ${element.toJSON().success_rate}\n`;
-              }else{
-                listingText += `${element.toJSON().name} has a success rate of ${element.toJSON().success_rate}\n`;
-              }
+              listingArr.push(element)
               
             })
-            return listingText;
+            return listingArr;
           });
 
-    const totalAvg = await mySqlPlayer.sync().then(()=>{
+    /* const totalAvg = await mySqlPlayer.sync().then(()=>{
         return mySqlPlayer.findAll({
          attributes: [[sequelizeConnection.fn('AVG', sequelizeConnection.col('success_rate')),'total_avg']]
           
@@ -274,12 +270,12 @@ export class mySqlGameRepository implements GameRepository {
             totalAvgText += `The total average of all players is: ${Math.trunc(element.toJSON().total_avg)}`;
         })
         return totalAvgText;
-      });
+      }); */
         
-        if (ratesListFunc && totalAvg) {
-            let finalText = `${ratesListFunc}${totalAvg}`;
+        if (ratesListFunc) {
+      
           
-          return finalText;
+          return ratesListFunc;
         } else {
           
           return null;
@@ -288,7 +284,7 @@ export class mySqlGameRepository implements GameRepository {
 
 
 
-      async allPlayersAndRatings(): Promise<string | null> {
+      async allPlayersAndRatings(): Promise<object[] | null> {
         const allPlayersRatingsFunc = await mySqlPlayer.sync().then(()=>{
           return mySqlPlayer.findAll({
            attributes: {
@@ -296,19 +292,13 @@ export class mySqlGameRepository implements GameRepository {
            }
          }); 
         }).then((data)=>{
-          let finalText = '';
+          let finalArr: object[] = [];
           data.forEach((element)=>{
-            if (element.toJSON().name === null){
-              finalText += `Player name: Anonim\n
-              Success rate: ${element.toJSON().success_rate}\n`
-            }else{
-              finalText += `Player name: ${element.toJSON().name}\n
-            Success rate: ${element.toJSON().success_rate}\n`
-            }
+           finalArr.push(element);
             
           })
-          return finalText
-        }) 
+          return finalArr
+        });
 
         
         if (allPlayersRatingsFunc) {
@@ -336,7 +326,7 @@ export class mySqlGameRepository implements GameRepository {
           return false;
         }
         
-        await mySqlPlayer.sync({alter:true}).then(()=>{
+        await mySqlPlayer.sync({}).then(()=>{
           mySqlPlayer.update({ name: newName }, {
            where: {
             id: playerId
@@ -356,7 +346,7 @@ export class mySqlGameRepository implements GameRepository {
 
         let finalGame = {dice_1:0, dice_2:0, winOrLose:false};
        
-        await mySqlGame.sync({alter:true}).then(()=>{
+        await mySqlGame.sync({}).then(()=>{
 
          
 
@@ -389,7 +379,7 @@ export class mySqlGameRepository implements GameRepository {
 
           let totalLosses = 0;
           let totalWins = 0;
-          await mySqlGame.sync({alter:true}).then(()=>{
+          await mySqlGame.sync({}).then(()=>{
             
             return mySqlGame.findAll({
               attributes: [
@@ -410,7 +400,7 @@ export class mySqlGameRepository implements GameRepository {
 
 
 
-            await mySqlGame.sync({alter:true}).then(()=>{
+            await mySqlGame.sync({}).then(()=>{
             
               return mySqlGame.findAll({
                 attributes: [
@@ -434,7 +424,7 @@ export class mySqlGameRepository implements GameRepository {
               
 
          
-          await mySqlPlayer.sync({alter:true}).then(()=>{
+          await mySqlPlayer.sync({}).then(()=>{
             return mySqlPlayer.update({ success_rate: playerSuccessRate }, {
               where: {
                 id: playerId
@@ -452,7 +442,7 @@ export class mySqlGameRepository implements GameRepository {
         
         let didItWork = false;
        
-        await mySqlGame.sync({alter:true}).then(()=>{
+        await mySqlGame.sync({}).then(()=>{
           return mySqlGame.destroy({
            where: {
             player_id: playerId
