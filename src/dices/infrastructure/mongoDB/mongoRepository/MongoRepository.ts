@@ -116,63 +116,60 @@ export class MongoGameRepository implements GameRepository {
     return minLoser;
   }
 
-  async ratesListing(): Promise<string | null>{
-    const ratesList: Array<userSchemaInterface> | null = await UserModel.find().sort({success_rate:-1})
-
+  async ratesListing(): Promise<Player[] | null> {
+    const ratesList: Array<userSchemaInterface> | null = await UserModel.find({success_rate:{$gt:1}})
+      .sort({ success_rate: -1 })
+      //.limit(1);
+    console.log(ratesList)
     if (!ratesList) {
       return null;
     }
 
-    let listingText = '';
-    ratesList.forEach((element)=>{
-      listingText += `${element.toJSON().name} has a success rate of ${element.toJSON().success_rate}\n`;
-    })
-
+    
+    /* let listingText = '';
+    ratesList.forEach((element) => {
+      listingText += `${element.toJSON().player_name} has a success rate of ${
+        element.toJSON().success_rate
+      }\n`;
+    });
+ */
     // Now find total average of all players
-
+/* 
     const allPlayers: Array<userSchemaInterface> | null =
       await UserModel.find();
 
-    let allSuccessRates: Array<number> = [];
+    const allSuccessRates: Array<number | undefined> = [];
 
-    allPlayers.forEach((element)=>{
-      if (typeof element.success_rate === 'number'){
-        
+    allPlayers.forEach((element) => {
+      if (typeof allSuccessRates !== 'undefined') {
         allSuccessRates.push(element.success_rate);
       }
     });
 
     let totalSum: number = 0;
 
-    for (let i=0;i<allSuccessRates.length;i++){
-
-      if (typeof allSuccessRates[i] === 'number'){
-
+    for (let i = 0; i < allSuccessRates.length; i++) {
+      if (typeof allSuccessRates === 'number') {
         totalSum += allSuccessRates[i];
       }
     }
 
     const totalAverage = totalSum / allSuccessRates.length;
+ */
+    //listingText += `\nAnd finally, the total average for all players is: ${totalAverage}`;
 
-    listingText += `\nAnd finally, the total average for all players is: ${totalAverage?.toFixed(2)}`;
-
-    return listingText;
+    return ratesList;
   }
-
-  async allPlayersAndRatings(): Promise<string | null> {
+  async allPlayersAndRatings(): Promise< Player[] | null> {
     const allPlayers: Array<userSchemaInterface> | null =
       await UserModel.find();
 
     if (!allPlayers) {
       return null;
     }
-
-    let playersList = '';
-    allPlayers.forEach((element)=>{
-      playersList += `${element.toJSON().name} has a success rate of ${element.toJSON().success_rate}\n`;
-    })
-    return playersList;
-
+    console.log(allPlayers)
+    
+    return allPlayers;
   }
 
   async modifyPlayerName(playerId: string, newName: string): Promise<boolean> {
@@ -262,17 +259,22 @@ export class MongoGameRepository implements GameRepository {
 
   }
 
-  async deleteAllGamesFromPlayer(playerId: number): Promise<boolean> {
+  async deleteAllGamesFromPlayer(playerId: number): Promise<Player | null> {
     console.log(playerId)
-    const deleteAllGames = await UserModel.deleteOne(
-      { _id: playerId })
-      console.log(playerId)
+    const deleteAllGames = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{games: []}})
+    .catch((err)=>{
+     return false;
+    })
 
-    if (!deleteAllGames){
-      return false
-    }
+  const modifyNumOfGames: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{num_of_games: 0}});
 
-    return true;
+  const modifyNumOfWins: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{num_of_wins: 0}});
+
+  const modifyRateOfSuccess: userSchemaInterface | null = await UserModel.findOneAndUpdate({_id: playerId}, {$set:{success_rate: 0}});
+
+  const resetPlayerGames = await UserModel.findOne({_id: playerId})
+
+    return resetPlayerGames;
   }
 
   async listAllGamesFromPlayer(playerId: string): Promise<object[] | null> {

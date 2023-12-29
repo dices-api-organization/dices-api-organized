@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { rateOfPlayers } from "./rateOfPlayers";
 
 export const Play = ({ id }: { id: string }) => {
 
@@ -15,6 +16,8 @@ export const Play = ({ id }: { id: string }) => {
     const [err, setErr] = useState('')
 
     const [success, setSuccess] = useState('')
+    const [successArr, setSuccessArr] = useState([])
+    const [rank, setRank] = useState([])
    const userId = id
 
     const [successArrThrows, setSuccessArrThrows] = useState([])
@@ -49,8 +52,8 @@ export const Play = ({ id }: { id: string }) => {
               })
               .then((data) => {
                 console.log(data.ok)
-                setDice1(data.dice_1)
-                setDice2(data.dice_2)
+                setDice1(data.diceThrow1)
+                setDice2(data.diceThrow2)
               })
               .catch(function (error) {
                 setErr("Fetch problems:" + error.message)
@@ -60,11 +63,17 @@ export const Play = ({ id }: { id: string }) => {
     const handleUpdate = () => {
         setErr('')
         setSuccess('')
+        setRank([])
+        setDice1(0)
+        setDice2(0)
         routeChange('../play/update', id)
     }
     const handleDelete = () => {
         setErr('')
         setSuccess('')
+        setRank([])
+        setDice1(0)
+        setDice2(0)
         fetch('http://localhost:3000/play/delete', 
             {
                 method: 'DELETE',
@@ -85,7 +94,72 @@ export const Play = ({ id }: { id: string }) => {
               })
               .then((data) => {
                 console.log(data.ok)
-                setSuccess('The user was deleted succesfully!')
+                setSuccess(`Now ${data.name} has: ${data.num_of_games} games, 
+                ${data.num_of_wins} wins, 
+                ${data.success_rate} success rate.`)
+              })
+              .catch(function (error) {
+                setErr("Fetch problems:" + error.message)
+                console.log("Fetch problems: " + error.message);
+              })
+    }
+    const handlePlayers = () => {
+      setErr('')
+      setSuccess('')
+      setSuccessArr([])
+      setRank([])
+      setDice1(0)
+      setDice2(0)
+      fetch('http://localhost:3000/play/players', 
+            {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Authorization': `Bearer ${savedToken}`,
+                    'Content-Type': 'application/json'
+                },
+              
+            })
+            .then((response) => {
+                if (!response.ok){
+                  throw new Error('Response list of players were not ok')
+                }
+                return response.json()
+              })
+              .then((data) => {
+                setSuccessArr(data)                
+              })
+              .catch(function (error) {
+                setErr("Fetch problems:" + error.message)
+                console.log("Fetch problems: " + error.message);
+              })
+    }
+    const handleRates = () =>{
+      setErr('')
+      setSuccess('')
+      setSuccessArr([])
+      setRank([])
+      setDice1(0)
+      setDice2(0)
+      fetch(`http://localhost:3000/play/rates`, 
+            {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Authorization': `Bearer ${savedToken}`,
+                    'Content-Type': 'application/json'
+                },
+              
+            })
+            .then((response) => {
+                if (!response.ok){
+                  throw new Error('Response list of players were not ok')
+                }
+                return response.json()
+              })
+              .then((data) => {
+                setRank(data)      
+                setSuccess(`The total average of all players are  ${rateOfPlayers(data)}`)
               })
               .catch(function (error) {
                 setErr("Fetch problems:" + error.message)
@@ -205,6 +279,7 @@ const handleMinLoser = () => {
         })
 }
 
+
     return(
         <>
             {id != '' && <h4>id: {id} </h4>}
@@ -225,14 +300,21 @@ const handleMinLoser = () => {
             <nav>
                 <button onClick={handlePlay}>Play</button>
                 <button onClick={handleUpdate}>Update</button>
-                <button>Get players</button>
+                <button onClick={handlePlayers}>Get players</button>
                 <button onClick={handleDelete}>Delete throw</button>
+                <button onClick={handleRates}>Get the best average player</button>
                 <button onClick={handleListThrows}>Get lis of throws</button>
                 <button onClick={handleMaxWinner}>Get max winner</button>
                 <button onClick={handleMinLoser}>Get min loser</button>
             </nav>
-            {success != '' && <p> <span>{success}</span>!</p>}
             {err}
+            {success != '' && <p><span>{success}</span></p>}
+            {successArr.length > 0 && successArr.map((value) => (
+               <p > {`User`} <span>{value.name}</span> has a success rate of  <span>{value.success_rate}</span></p>
+             ))}
+            {rank.length > 0 && rank.map((value, index) => (
+               <p > {index + 1}º   <span>{value.name}</span>    has a success rate of    <span>{Math.round(value.success_rate)}</span></p>
+             ))}
         </>
     )
 }
