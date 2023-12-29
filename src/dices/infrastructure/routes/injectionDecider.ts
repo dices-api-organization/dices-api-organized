@@ -4,7 +4,15 @@ import { UseCases } from '../../application/UseCases';
 
 dotenv.config();
 
-const bbdd = process.env.DATABASE;
+let bbdd: string;
+
+if (process.env.DATABASE){
+   bbdd = process.env.DATABASE;
+} else{
+   bbdd = 'mongodb';
+}
+
+
 
 
 let finalUseCases: UseCases;
