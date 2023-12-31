@@ -147,16 +147,7 @@ src/
         └── front
 ```
 
+### Database UML
 
+The file "./mysql_UML.png" is a UML showing our MySQL database.
 
-
-RUTAS:
----
-
-
-
-
-
-```sh
-terminal test text
-```
