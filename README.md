@@ -77,6 +77,8 @@ npm run build
 
 ###  Tests
 
+To perform the tests, the environment variable DATABASE must be set to DATABASE='mongodb'.
+
 ```bash
 npm run test
 ```
