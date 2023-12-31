@@ -1,0 +1,178 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "dices-api-thunderclient",
+    "dateExported": "2023-12-31T10:08:12.417Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "ecddcf68-738d-4e62-83ee-29348a0077a0",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "getMaxWinner",
+            "url": "http://localhost:3000/play/max",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-12-18T14:14:26.350Z",
+            "modified": "2023-12-18T14:21:21.131Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "2e9c1606-2517-4122-8cbc-a20381f94f72",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "postPlayGame",
+            "url": "http://localhost:3000/play/throw",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-12-18T14:14:44.352Z",
+            "modified": "2023-12-31T09:34:08.744Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\"id\":\"65913579cf55ebd56492ab67\"}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "27bbee2b-3f14-4577-9a1d-f4290ee465cd",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "getMinLoser",
+            "url": "http://localhost:3000/play/min",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2023-12-18T14:31:46.723Z",
+            "modified": "2023-12-18T14:32:07.633Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "3b8cef65-2e38-4559-ab7a-3dc112b7d2b2",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "getAllGames",
+            "url": "http://localhost:3000/play/games/65913579cf55ebd56492ab67",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2023-12-18T15:10:05.666Z",
+            "modified": "2023-12-31T10:04:11.131Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1OTEzNTc5Y2Y1NWViZDU2NDkyYWI2NyIsIm5hbWUiOiI2IiwiaWF0IjoxNzA0MDE2NTc3LCJleHAiOjE3MDQxODkzNzd9.c6TnJIj0FFo3To9tNtEEzY1KlEyjOs-0pDDyXOy77Mw"
+            },
+            "tests": []
+        },
+        {
+            "_id": "5c8ff830-01da-44e6-93a5-53457842f041",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "getPlayers",
+            "url": "http://localhost:3000/play/players",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2023-12-18T15:11:40.184Z",
+            "modified": "2023-12-18T15:12:42.054Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "1e0fa8fa-a49c-4464-a5a7-6ce683a25b8b",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "getRates",
+            "url": "http://localhost:3000/play/rates",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2023-12-18T15:25:55.683Z",
+            "modified": "2023-12-18T15:26:30.092Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "d69f1a1a-afc0-41ea-affd-0a735ea934e7",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "deleteGames",
+            "url": "http://localhost:3000/play/delete",
+            "method": "DELETE",
+            "sortNum": 70000,
+            "created": "2023-12-18T15:41:12.802Z",
+            "modified": "2023-12-30T12:57:22.537Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\"id\":\"659013814aea137299e711f4\"}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "c1b3a0e5-990b-4d10-b1aa-b31ac97aa891",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "updatePlayerName",
+            "url": "http://localhost:3000/play/update",
+            "method": "PUT",
+            "sortNum": 80000,
+            "created": "2023-12-18T15:47:32.146Z",
+            "modified": "2023-12-30T14:27:01.742Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\"id\":\"6590287969c71b24c3396830\", \"name\":\"josecito\"}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "0f90da45-e129-4b02-8974-2db5f2796533",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "registerUser",
+            "url": "http://localhost:3000/userRegister/",
+            "method": "POST",
+            "sortNum": 90000,
+            "created": "2023-12-18T16:06:27.146Z",
+            "modified": "2023-12-31T09:33:45.461Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\"name\":\"6\",\"password\":\"6\"}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "5071ce98-27fc-4423-878f-ebceb656d972",
+            "colId": "76a34e72-9392-4d25-a26b-e0f15c2cce9f",
+            "containerId": "",
+            "name": "userLogin",
+            "url": "http://localhost:3000/userLogin/",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2023-12-18T16:08:14.250Z",
+            "modified": "2023-12-31T09:33:53.878Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\"name\":\"6\",\"password\":\"6\"}",
+                "form": []
+            },
+            "tests": []
+        }
+    ]
+}
