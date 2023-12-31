@@ -16,6 +16,8 @@ This project corresponds to Sprint 6 of Dices API. It is an API that manages pla
    - GET /play/min: Get the best player. Requires no body.
    - GET /play/max: Get the worst player. Requires no body.
 
+Our ThunderClient collection, './thunder-collection_dices-api-thunderclient.json', must replace these "testId", "testName" and "testPassword" values with the real values for our user's passwords, names, etc.
+
 ### 📥 Installation
 
 
