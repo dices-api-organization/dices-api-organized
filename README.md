@@ -40,14 +40,14 @@ cd /src/dices/infrastructure/front
 npm install
 ```
 
-Now, you need Docker and Docker-compose, then you can stop your local MongoDB and MySQL databases and rise docker databases:
+Now, you need Docker and Docker-compose, then you can stop your local MongoDB and MySQL databases and rise docker databases. This command will start both a MySQL database and a MongoDB database at the same time.
 
 
 ```bash
  npm run dev:startdocker
 ```
 
-Put your user & password in the .env-template file and rename it as .env:
+Rename the .env-template file into .env. In this .env, the variable DATABASE should be set to your desired database. Either DATABASE='mongodb' or DATABASE='mysql'. Depending on which one is selected, the website will run with one databse or another. All other usernames, passwords, etc, are preset in the template file and should work.
 
 
 
