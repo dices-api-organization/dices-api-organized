@@ -7,9 +7,9 @@
     "test": "npx jest --detectOpenHandles",
     "prettier-format": "npx prettier --config .prettierrc 'src/**/*.ts' --write",
     "dev:watcher": "npx nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "dev:stoplocal": " sudo systemctl stop mongod & sudo systemctl stop mysql",
-    "dev:stopdocker": "sudo docker-compose -f docker-compose-mongo.yml -f docker-compose-mysql.yml down -d ",
-    "dev:startdocker": "sudo docker-compose -f docker-compose-mongo.yml -f docker-compose-mysql.yml up -d ",
+    "dev:stoplocal": "systemctl stop mongod & sudo systemctl stop mysql",
+    "dev:stopdocker": "docker-compose -f docker-compose-mongo.yml -f docker-compose-mysql.yml down",
+    "dev:startdocker": "docker-compose -f docker-compose-mongo.yml -f docker-compose-mysql.yml up -d ",
     "dev": "npx ts-node-dev  src/backend/server.ts",
     "eternal": "nodemon src/backend/server.ts",
     "build": "npx tsc"
